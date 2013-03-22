@@ -32,12 +32,9 @@ html {
   background-repeat: no-repeat;
   background-size: contain;
   overflow: visible; }
-
-#main {
-  margin-left: 40%;
-  margin-top: 20%;
-  z-index: 1;
-  position: relative; }
+  @media all and (max-width: 30em) {
+    #my-picture {
+      width: 50%; } }
 
 h3 {
   font-size: 1.125em;
@@ -49,12 +46,38 @@ h3 {
   font-weight: normal;
   color: #cccccc; }
 
+#main {
+  margin-left: 40%;
+  margin-top: 20%;
+  z-index: 1;
+  position: relative; }
+  @media all and (max-width: 45em) {
+    #main {
+      margin-top: 10%;
+      font-size: .875em; }
+      #main h1 {
+        font-size: 2em; }
+      #main h3 {
+        font-size: .925em; }
+      #main li {
+        display: list-item;
+        margin: 1.5em auto; }
+        #main li:after {
+          content: '';
+          margin: 0; } }
+      @media all and (max-width: 45em) and (max-width: 30em) {
+        #main h3 {
+          display: none; } }
+
 ul.menu {
   list-style-type: none;
   display: block;
   margin: 3em 0 0;
   text-align: center;
   padding: 0; }
+  @media all and (max-width: 25em) {
+    ul.menu {
+      margin: 2em 0 0; } }
 
 li {
   display: inline-block; }
@@ -79,17 +102,41 @@ a:hover {
   color: white; }
 
 #resume {
-  font-family: Georgia, 'Times', 'Times New Roman', serif;
-  padding: 0 2em;
+  font-family: 'Libre Baskerville', serif;
+  padding: 1em 2em;
   background-color: white;
   color: black;
   max-width: 60em;
   margin: 0 auto; }
+  #resume > p {
+    text-align: center;
+    font-size: .875em; }
+  #resume span.gc-cs-link {
+    color: #255b9d;
+    text-decoration: none; }
+    #resume span.gc-cs-link:hover {
+      text-decoration: underline;
+      color: #003373; }
+  #resume a {
+    color: #255b9d;
+    font-weight: bold; }
+    #resume a:hover {
+      text-decoration: underline;
+      color: #003373; }
+  #resume #skills p {
+    font-size: .875em;
+    line-height: 1.3em; }
+    #resume #skills p a {
+      font-weight: normal; }
   #resume ul {
     margin-bottom: 0;
-    line-height: 1.5em; }
+    line-height: 1.25em;
+    border-top: 1px solid #cccccc;
+    padding-top: .5em; }
   #resume li {
-    display: list-item; }
+    display: list-item;
+    font-size: .875em;
+    margin-bottom: .25em; }
     #resume li:after {
       content: ''; }
   #resume h1 {
@@ -98,7 +145,8 @@ a:hover {
     font-weight: bold;
     font-family: Helvetica, Arial, sans-serif; }
   #resume h2 {
-    font-size: .875em;
+    margin: 1em 0 .5em;
+    font-size: 1em;
     font-family: Helvetica, Arial, sans-serif;
     width: 100%;
     border-bottom: 1px solid black; }
@@ -108,14 +156,83 @@ a:hover {
   #resume h4, #resume h5 {
     float: left;
     margin: 0; }
+  #resume h4 {
+    padding-bottom: .5em; }
   #resume h5 {
     font-style: italic;
-    font-weight: normal; }
+    font-weight: normal;
+    font-size: 1em; }
   #resume #experience div p {
-    float: right; }
+    float: right;
+    font-size: .925em; }
   #resume #experience div div, #resume #experience div ul {
     clear: both; }
   #resume #experience div div {
     margin-bottom: 1em; }
   #resume #experience h1 {
     font-size: 2em; }
+  @media all and (max-width: 35em) {
+    #resume #experience > div > p {
+      display: none; }
+    #resume #experience > div > div > p {
+      display: block;
+      float: left;
+      clear: both;
+      color: #666666; } }
+  @media all and (max-width: 35em) {
+    #resume {
+      padding: 1em 1em; }
+      #resume span.extra {
+        display: none; }
+      #resume ul {
+        padding-left: 1em; } }
+  #resume #edu p {
+    font-size: .875em; }
+
+#portfolio {
+  max-width: 80em;
+  margin: 0 auto;
+  text-align: center; }
+  #portfolio h1 {
+    font-size: 2em;
+    text-align: left;
+    border-bottom: 1px solid white;
+    margin-bottom: .25em; }
+    @media all and (max-width: 30em) {
+      #portfolio h1 {
+        font-size: 1.5em; } }
+  #portfolio a {
+    opacity: .8; }
+    #portfolio a:hover {
+      opacity: 1; }
+    #portfolio a img {
+      width: 16%; }
+      @media all and (max-width: 70em) {
+        #portfolio a img {
+          width: 19%; } }
+      @media all and (max-width: 40em) {
+        #portfolio a img {
+          width: 24%; } }
+      @media all and (max-width: 30em) {
+        #portfolio a img {
+          width: 32.4%; } }
+
+#fancybox-thumbs li:after {
+  content: ''; }
+
+footer p {
+  margin-bottom: .25em; }
+
+#my-picture footer {
+  color: #666666;
+  white-space: nowrap;
+  position: absolute;
+  left: 42em;
+  bottom: 0; }
+  #my-picture footer a {
+    color: #999999; }
+    #my-picture footer a:hover {
+      color: white; }
+  @media all and (max-width: 42em) {
+    #my-picture footer {
+      display: none; } }
