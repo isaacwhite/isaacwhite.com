@@ -1,0 +1,167 @@
+/**VARIABLES**/
+
+$gray: #cccccc;
+@mixin serif {
+	font-family: Georgia, 'Times', 'Times New Roman', serif;
+}
+@mixin sans {
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+/**STYLE**/
+
+body,td,th {
+	font-family: Helvetica, Arial, sans-serif;
+	text-align: left;
+	color: white;
+	margin: 0;
+}
+h1 {
+	font-size: 3em;
+	margin: 0;
+	/*text-shadow: 0 1px 1px #FAE9D5;*/
+	text-align: center;
+	margin-bottom: .25em;
+	/*font-family: 'Junction', sans-serif;*/
+	/*font-family: 'Open Sans', sans-serif;*/
+	font-weight: normal;
+	text-transform: uppercase;
+}
+html {
+	/*background-image:url('../images/bg1.png');*/
+	background-color: black;
+}
+
+#my-picture {
+	z-index: 0;
+	position: absolute;
+	left: 0;
+	top: 5%;
+	width:70%;
+	// width: auto;
+	height:95%;
+	background-image: url('../images/isaac.png');
+	background-repeat: no-repeat;
+	background-size:contain;
+	overflow: visible;
+
+}
+#main {
+	margin-left: 40%;
+	margin-top: 20%;
+	z-index:1;
+	position: relative;
+}
+h3 {
+	font-size: 1.125em;
+	margin: 0 auto;
+	font-style: italic;
+	width:75%;
+	text-align: center;
+	line-height: 1.5em;
+	font-weight: normal;
+	color: $gray;
+}
+
+ul.menu {
+	list-style-type: none;
+	display: block;
+	margin: 3em 0 0;
+	text-align: center;
+	// -webkit-margin-before: 0;
+	padding: 0;
+}
+
+li {
+	display: inline-block;
+}
+
+li:after {
+	content:'|';
+	margin: 0 .5em;
+}
+
+li.last:after {
+	content:'';
+	margin: 0;
+}
+a {
+	text-decoration: none;
+	color: $gray;
+	transition:all .5s ease;
+	-webkit-transition:all .5s ease;
+	-moz-transition:all .5s ease;
+	-o-transition:all .5s ease;
+}
+
+a:hover {
+	color: white;
+}
+
+#resume {
+	@include serif;
+	padding: 0 2em;
+	background-color: white;
+	color: black;
+	max-width: 60em;
+	margin: 0 auto;
+	ul {
+		// list-style-type: square;
+		// text-align: left;
+		margin-bottom: 0;
+		line-height: 1.5em;
+	}
+
+	li {
+		display: list-item;
+		&:after {
+			content:'';
+		}
+	}
+
+	h1{
+		padding-top:1em;
+		font-size: 1.5em;
+		font-weight: bold;
+		@include sans;
+
+	}
+	h2 {
+		font-size: .875em;
+		// font-weight: normal;
+		@include sans;
+		width: 100%;
+		border-bottom: 1px solid black;
+	}
+	#edu p,
+	#experience p {
+		margin: 0;
+	}
+
+	h4, h5 {
+		float: left;
+		margin:0;
+	}
+	h5 {
+		font-style: italic;
+		font-weight: normal;
+	}
+	#experience{
+		div {
+			p{
+				float: right;
+			}
+
+			div,ul {
+				clear: both;
+			}
+			div {
+				margin-bottom: 1em;
+			}
+		}
+		h1 {
+			font-size: 2em;
+		}
+		
+	} 
+}
