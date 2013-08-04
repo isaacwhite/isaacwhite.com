@@ -8,31 +8,53 @@ $zipCode = 10027;
 function getWeatherElements($iconCode,$isDay) {
     $iconHTML = "<ul class=\"weather\"><li class=\"";
     if ($iconCode == "cloudy") {
-        $iconHTML = "cloud";
+        $iconHTML .= "icon-cloud";
     } else if (($iconCode == "chancerain") ||
             ($iconCode == "rain")) {
-        $iconHTML = "rainy";
+        $iconHTML .= "basecloud\"></li><li class=\"";
+        $iconHTML .= "icon-rainy";
     } else if (($iconCode == "chanceflurries") ||
         ($iconCode == "chancesnow") ||
         ($iconCode == "flurries") ||
         ($iconCode == "snow")) {
-
-        $iconHTML = "snowy";
+        $iconHTML .= "basecloud\"></li><li class=\"";
+        $iconHTML .= "icon-snowy";
     } else if (($iconCode == "sleet") ||
         ($iconCode == "chancesleet")) {
-        $iconHTML = "sleet";
+        $iconHTML .= "icon-sleet";
     } else if (($iconCode == "chancetstorms") ||
         ($iconCode == "tstorms")) {
-        $iconHTML = "thunder";
+        $iconHTML .= "basecloud\"></li><li class=\"";
+        $iconHTML .= "icon-thunder";
+    } else if (stristr($iconCode,'partly')) {
+        // if ($iconHTML == "partlycloudy") {
+            $iconHTML .= "basecloud\"></li><li class=\"";
+            $iconHTML .= "icon-night";
+        // }
     } else {
         if($isDay) {
-            $iconHTML .= "icon-sun\"></li></ul>";
+            $iconHTML .= "icon-sun";
         } else {
-            $iconHTML .= "icon-moon\"></li></ul>";
+            $iconHTML .= "icon-moon";
         }
     }
+    $iconHTML .= "\"></li></ul>";
 
     return $iconHTML;
+}
+
+function applyColor($temperature) {
+    
+    $labelHTML = "<p class=\"wlabel";
+    if ($temperature > 75) {
+        $labelHTML .= " hot\">";
+    } else if ($temperature < 55) {
+        $labelHTML .= " cold\">";
+    } else {
+        $labelHTML .= "\">";
+    }
+    $labelHTML .= $temperature . " °F</p>";
+    return $labelHTML;
 }
 
 //actual api lookup
@@ -40,8 +62,8 @@ $forcastLookup = "http://api.wunderground.com/api/ae1ee363833e1943/forecast/q/";
 $conditionsLookup = "http://api.wunderground.com/api/ae1ee363833e1943/geolookup/conditions/q/";
 
 //some saved responses for testing
-// $forcastLookup = "forcast_";
-// $conditionsLookup = "conditions_";
+$forcastLookup = "forcast_";
+$conditionsLookup = "conditions_";
 
 
 // Open the file to get previous page info
@@ -137,32 +159,95 @@ foreach($simpleForcasts as $period) {
         <script src="../js/vendor/modernizr-2.6.2.min.js"></script>
         <link rel="stylesheet" href="../fonts/weather/iconvault-preview.css">
         <style>
-        .weather {
+        * {
+            box-sizing: border-box;
+        }
+
+        .current .weather {
+            font-size: 20rem;
+            margin: 0 auto -.25em;
+            /*line-height: 0;*/
+        }
+
+        .current {
+            margin-bottom: 3em;
+        }
+
+        ul.weather {
             font-size: 14rem;
             text-align: center;
             color: orange;
+            margin-bottom: -.25em;
         }
         .weather p {
             font-size: 4rem;
             margin: 0;
             color: white;
+            text-align: center;
+        }
+        .wlabel {
+            text-align: center;
+            padding-top: -15%;
+            margin:0;
+        }
+
+        .current .wlabel {
+            font-size: 3rem;
         }
         .preview {
             float: left;
-            width: 25%;
+            width: 50%;
+            margin-top: 3em;
+        }
+
+        @media all and (min-width: 48em) {
+            .preview {
+                width: 25%;
+            }
         }
         ul {
             padding: 0;
             margin: 0;
         }
-        li {
-            display: block;
-            text-align: center;
-
-        }
         li:after {
             content: "";
         }
+
+
+        li.basecloud {
+            position:absolute;
+        }
+        .basecloud:before {
+            font-family: "iconvault";
+            font-style: normal;
+            font-weight: normal;
+            font-variant: normal;
+            text-transform: none;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            text-decoration: inherit;
+            content: '\f105';
+            position:absolute;
+            color: rgb(204, 204, 204);
+        }
+        .icon-moon,
+        .icon-night {
+            color: white;
+        }
+
+        footer p {
+            float: right;
+            bottom: 0;
+            margin: 8em 3em 0 0;
+            color: #d7d7d7;
+        }
+        .hot {
+            color: #ed9128;
+        }
+        .cold {
+            color: #28b3ed;
+        }
+
         </style>
         <script>
 
@@ -171,10 +256,10 @@ foreach($simpleForcasts as $period) {
         var queryCount = "Daily Query Count: " + <?php print $queryCount; ?> ;
         var serverResponse = <?php print $jsonForcast;?>;
         var conditionResponse = <?php print $jsonConditions; ?>;
+        var currentCondition = "<?php print $conditionsKey; ?>";
         console.log(serverResponse);
         console.log(conditionResponse);
-        // console.log(date);
-        // console.log(fileOut);
+        console.log(currentCondition);
         console.log(queryCount);
         </script>
     </head>
@@ -183,33 +268,34 @@ foreach($simpleForcasts as $period) {
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
         <div id="dashboard">
-        	<h3>Current Temperature: <?php print $currentTemp; ?></h3>
-        	<h3>Feels Like: <?php print $feelsLike; ?></h3>
-        	<h3>Condition: <?php print $conditionsKey; ?></h3>
-            <h3><?php print $lastUpdated ?></h3>
-            <?php print $iconClass; ?>
-                <p><?php print $currentTemp?> °F</p>
+            <div class="current">
+                <?php print $iconClass; ?>
+                <?php print applyColor($currentTemp); ?>
+            </div>
         </div>
         <div class="preview first">
             <h3><?php print $previewArray[0]; ?></h3>
-              <?php print $forecastIcons[0]; ?>
-            <p><?php print $forecastTemps[0]; ?> °F</p>
+            <?php print $forecastIcons[0]; ?>
+            <?php print applyColor($forecastTemps[0]); ?>
         </div>
         <div class="preview second">
              <h3><?php print $previewArray[1];  ?></h3>
              <?php print $forecastIcons[1]; ?>
-             <p><?php print $forecastTemps[1]; ?> °F</p>
+             <?php print applyColor($forecastTemps[1]); ?>
         </div>
         <div class="preview third">
             <h3><?php print $previewArray[2];  ?></h3>
                 <?php print $forecastIcons[2]; ?>
-             <p><?php print $forecastTemps[2]; ?> °F</p>
+                <?php print applyColor($forecastTemps[2]); ?>
         </div>
         <div class="preview fourth">
              <h3><?php print $previewArray[3];  ?></h3>
              <?php print $forecastIcons[3]; ?>
-             <p><?php print $forecastTemps[3]; ?> °F</p>
+             <?php print applyColor($forecastTemps[3]); ?>
         </div>
 
     </body>
+    <footer>
+        <p><?php print $lastUpdated?></p>
+    </footer>
 </html>
