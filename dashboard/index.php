@@ -1,9 +1,11 @@
 <?php
-
+date_default_timezone_set('US/Eastern');
 $today = date("mdy"); //determine the current date as a 6 character string
+$hour = intval(date("H"));
 $todayString = date("m/d/y");
 $file = 'useCount.txt';
 $zipCode = 10027;
+$apiKey = "ae1ee363833e1943";
 
 function getWeatherElements($iconCode,$isDay) {
     $iconHTML = "<ul class=\"weather\"><li class=\"";
@@ -49,8 +51,7 @@ function getWeatherElements($iconCode,$isDay) {
     return $iconHTML;
 }
 
-function applyColor($temperature) {
-    
+function applyColor($temperature) {  
     $labelHTML = "<p class=\"wlabel";
     if ($temperature > 75) {
         $labelHTML .= " hot\">";
@@ -62,12 +63,6 @@ function applyColor($temperature) {
     $labelHTML .= $temperature . " °F</p>";
     return $labelHTML;
 }
-
-//actual api lookup
-$forecastLookup = "http://api.wunderground.com/api/ae1ee363833e1943/forecast/q/";
-$conditionsLookup = "http://api.wunderground.com/api/ae1ee363833e1943/geolookup/conditions/q/";
-$astronomyLookup = "http://api.wunderground.com/api/ae1ee363833e1943/astronomy/q/";
-
 //some saved responses for testing
 // $forecastLookup = "forecast_";
 // $conditionsLookup = "conditions_";
@@ -85,11 +80,27 @@ $queryCountString = $useQuery[1];
 
 //parse the query count into a variable to increment
 $queryCount = intval($queryCountString);
-if ($lastDate == $today) {
-	$queryCount++;
+
+$lookupCount = 3;//how many queries we do per page load
+if($lastDate == $today) { //check if we already did a query today
+    if($queryCount < 4997) { //make sure we don't go over daily limit
+        $forecastLookup = "http://api.wunderground.com/api/" . $apiKey . "/forecast/q/";
+        $conditionsLookup = "http://api.wunderground.com/api/" . $apiKey . "/geolookup/conditions/q/";
+        $astronomyLookup = "http://api.wunderground.com/api/" . $apiKey . "/astronomy/q/";
+
+        $queryCount = $queryCount + $lookupCount;
+    } else {
+        //we can't look up in this case.
+    }
 } else {
-	$queryCount = 1;
+    $forecastLookup = "http://api.wunderground.com/api/" . $apiKey . "/forecast/q/";
+    $conditionsLookup = "http://api.wunderground.com/api/" . $apiKey . "/geolookup/conditions/q/";
+    $astronomyLookup = "http://api.wunderground.com/api/" . $apiKey . "/astronomy/q/";
+    
+    $queryCount = $lookupCount;
 }
+//actual api lookup
+
 // Append a new use string to the file
 $newUseString = "";
 $newUseString .= $today . "," . $queryCount;
@@ -113,7 +124,6 @@ $simpleForecasts = $parsedForecast->{'forecast'}->{'simpleforecast'}->{'forecast
 $currentTemp = $currentObservation->{'temp_f'};
 $feelsLike = $currentObservation->{'feelslike_f'};;
 $conditionsKey = $currentObservation->{'icon'};
-$iconClass = getWeatherElements($conditionsKey);
 $lastUpdated = $currentObservation->{'observation_time'};
 $sunset = $parsedAstronomy->{'moon_phase'}->{'sunset'};
 $sunrise = $parsedAstronomy->{'moon_phase'}->{'sunrise'};
@@ -121,6 +131,15 @@ $sunsetString = ($sunset->{'hour'} - 12) . ":" . ($sunset->{'minute'});
 $sunriseString = ($sunrise->{'hour'}) . ":" . ($sunrise->{'minute'});
 $periodTitles = array();
 $forecastIcons = array();
+$sunsetHour = intval($sunset->{'hour'});
+$sunriseHour = intval($sunrise->{'hour'});
+
+if ($hour < $sunriseHour || $hour > $sunsetHour) {
+    $daytime = FALSE;
+} else {
+    $daytime = TRUE;
+}
+$iconClass = getWeatherElements($conditionsKey,$daytime);
 
 // print $sunriseString;
 // print $sunsetString;
@@ -151,9 +170,6 @@ foreach($simpleForecasts as $period) {
     }
 }
 
-//var_dump($periodTitles);
-// var_dump($forecasts);
-
 ?>
 
 
@@ -175,145 +191,150 @@ foreach($simpleForecasts as $period) {
         <script src="../js/vendor/modernizr-2.6.2.min.js"></script>
         <link rel="stylesheet" href="../fonts/weather/iconvault-preview.css">
         <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            /*overflow: hidden;*/
-        }
-        .current .weather {
-            font-size: 20rem;
-            margin: 0 auto -.25em;
-            /*line-height: 0;*/
-        }
-
-        .current {
-            margin-bottom: 3em;
-        }
-
-        ul.weather {
-            font-size: 14rem;
-            text-align: center;
-            margin-bottom: -.15em;
-        }
-        .weather p {
-            font-size: 4rem;
-            margin: 0;
-            color: white;
-            text-align: center;
-        }
-        .wlabel {
-            text-align: center;
-            margin:0;
-            font-size: 1.5em;
-        }
-
-        .current .wlabel {
-            font-size: 3rem;
-        }
-        .preview {
-            float: left;
-            width: 50%;
-            margin-top: 3em;
-        }
-
-        @media all and (min-width: 48em) {
-            .preview {
-                width: 25%;
+            * {
+                box-sizing: border-box;
             }
-        }
-        ul {
-            padding: 0;
-            margin: 0;
-        }
-        li:after {
-            content: "";
-        }
+
+            html {
+                /*overflow: hidden;*/
+            }
+            .current .weather {
+                font-size: 20rem;
+                margin: 0 auto -3rem;
+                /*line-height: 0;*/
+            }
+
+            .current {
+                margin-bottom: 3em;
+            }
+
+            ul.weather {
+                font-size: 14rem;
+                text-align: center;
+                margin-bottom: -1rem;
+            }
+            .weather p {
+                font-size: 4rem;
+                margin: 0;
+                color: white;
+                text-align: center;
+            }
+            .wlabel {
+                text-align: center;
+                margin:0;
+                font-size: 1.5em;
+            }
+
+            .current .wlabel {
+                font-size: 3rem;
+            }
+            .preview {
+                margin-top: 3em;
+            }
+
+            @media all and (min-width: 36em) {
+                .preview {
+                    float:left;
+                    width: 50%;
+                }
+            }
+            @media all and (min-width: 48em) {
+                .preview {
+                    width: 25%;
+                }
+            }
+            ul {
+                padding: 0;
+                margin: 0;
+            }
+            li:after {
+                content: "";
+            }
 
 
-        li.basecloud {
-            position:absolute;
-        }
+            li.basecloud {
+                position:absolute;
+            }
 
-        h3 {
-            font-style: normal;
-            text-transform: uppercase;
-            font-size: .925em;
-        }
-        .basecloud:before {
-            font-family: "iconvault";
-            font-style: normal;
-            font-weight: normal;
-            font-variant: normal;
-            text-transform: none;
-            line-height: 1;
-            -webkit-font-smoothing: antialiased;
-            text-decoration: inherit;
-            content: '\f105';
-            position:absolute;
-            color: white;
-        }
+            h3 {
+                font-style: normal;
+                text-transform: uppercase;
+                font-size: .925em;
+            }
+            .basecloud:before {
+                font-family: "iconvault";
+                font-style: normal;
+                font-weight: normal;
+                font-variant: normal;
+                text-transform: none;
+                line-height: 1;
+                -webkit-font-smoothing: antialiased;
+                text-decoration: inherit;
+                content: '\f105';
+                position:absolute;
+                color: white;
+            }
 
-        .basecloud.storm:before {
-            color: #4c4c4c;
-        }
-        .icon-moon,
-        .icon-night {
-            color: #f9f7af;
-        }
+            .basecloud.storm:before {
+                color: #4c4c4c;
+            }
+            .icon-moon,
+            .icon-night {
+                color: #f9f7af;
+            }
 
-        .icon-sun,
-        .icon-sunny,
-        .icon-sunrise,
-        .icon-thunder  {
-            color: #ffde00;
-        }
+            .icon-sun,
+            .icon-sunny,
+            .icon-sunrise,
+            .icon-thunder  {
+                color: #ffde00;
+            }
 
-        footer p {
-            clear: both;
-            float: right;
-            bottom: 0;
-            margin: 8em 3em 1em 0;
-            color: #d7d7d7;
-            text-transform: uppercase;
-            font-size: .925em;
-        }
-        .hot {
-            color: #ed9128;
-        }
-        .cold,
-        .icon-rainy{
-            color: #28b3ed;
-        }
+            footer p {
+                clear: both;
+                float: right;
+                bottom: 0;
+                margin: 8em 3em 1em 0;
+                color: #d7d7d7;
+                text-transform: uppercase;
+                font-size: .925em;
+            }
+            .hot {
+                color: #ed9128;
+            }
+            .cold,
+            .icon-rainy{
+                color: #28b3ed;
+            }
 
-        .icon-sunset {
-            color: #f96f23;
-        }
+            .icon-sunset {
+                color: #f96f23;
+            }
 
-        #almanac {
-            display:block;
-            text-align:center;
-        }
-        .icon-sunset,
-        .icon-sunrise {
-            font-size: 6rem;
-            display: block;
-            margin-bottom: -1.5rem;
-        }
+            #almanac {
+                display: block;
+                text-align: center;
+            }
+            .icon-sunset,
+            .icon-sunrise {
+                font-size: 6rem;
+                display: block;
+                margin-bottom: -1.5rem;
+            }
 
-        .sunset p,
-        .sunrise p{
-            font-size: 2rem;
-            display: block;
-            margin: 0;
-        }
+            .sunset p,
+            .sunrise p {
+                font-size: 2rem;
+                display: block;
+                margin: 0;
+            }
 
-        .sunrise,
-        .sunset {
-            display:inline-block;
-            margin: 0 2rem;
-        }
+            .sunrise,
+            .sunset {
+                display:inline-block;
+                margin: 0 .5rem;
+                max-width: 40%;
+            }
 
         </style>
         <script>
