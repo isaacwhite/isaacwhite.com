@@ -64,12 +64,12 @@ function applyColor($temperature) {
 }
 
 //actual api lookup
-$forcastLookup = "http://api.wunderground.com/api/ae1ee363833e1943/forecast/q/";
+$forecastLookup = "http://api.wunderground.com/api/ae1ee363833e1943/forecast/q/";
 $conditionsLookup = "http://api.wunderground.com/api/ae1ee363833e1943/geolookup/conditions/q/";
 $astronomyLookup = "http://api.wunderground.com/api/ae1ee363833e1943/astronomy/q/";
 
 //some saved responses for testing
-// $forcastLookup = "forcast_";
+// $forecastLookup = "forecast_";
 // $conditionsLookup = "conditions_";
 
 
@@ -97,10 +97,10 @@ $newUseString .= $today . "," . $queryCount;
 // Write the contents back to the file
 file_put_contents($file, $newUseString);
 
-$jsonForcast = file_get_contents($forcastLookup . $zipCode . ".json");
+$jsonForecast = file_get_contents($forecastLookup . $zipCode . ".json");
 $jsonConditions = file_get_contents($conditionsLookup . $zipCode . ".json");
 $jsonAstronomy = file_get_contents($astronomyLookup . $zipCode . ".json");
-$parsedForcast = json_decode($jsonForcast);
+$parsedForecast = json_decode($jsonForecast);
 $parsedConditions = json_decode($jsonConditions); 
 $parsedAstronomy = json_decode($jsonAstronomy); 
 
@@ -108,8 +108,8 @@ $parsedAstronomy = json_decode($jsonAstronomy);
 $temp_f = $parsed_json->{'current_observation'}->{'temp_f'};
 $currentHigh = $parse_json->*/
 $currentObservation = $parsedConditions ->{'current_observation'};
-$forcasts = $parsedForcast->{'forecast'}->{'txt_forecast'}->{'forecastday'};
-$simpleForcasts = $parsedForcast->{'forecast'}->{'simpleforecast'}->{'forecastday'};
+$forecasts = $parsedForecast->{'forecast'}->{'txt_forecast'}->{'forecastday'};
+$simpleForecasts = $parsedForecast->{'forecast'}->{'simpleforecast'}->{'forecastday'};
 $currentTemp = $currentObservation->{'temp_f'};
 $feelsLike = $currentObservation->{'feelslike_f'};;
 $conditionsKey = $currentObservation->{'icon'};
@@ -125,7 +125,7 @@ $forecastIcons = array();
 // print $sunriseString;
 // print $sunsetString;
 
-foreach($forcasts as $period) {
+foreach($forecasts as $period) {
     $title = $period->{'title'};
     $icon = $period->{'icon'};
     if(!stristr($title,'night')) {
@@ -139,7 +139,7 @@ foreach($forcasts as $period) {
     array_push($forecastIcons, $iconClean);
 }
 $forecastTemps = array();
-foreach($simpleForcasts as $period) {
+foreach($simpleForecasts as $period) {
     $high = $period->{'high'}->{'fahrenheit'};
     $low = $period->{'low'}->{'fahrenheit'};
     //if the first forecast is an evening value
@@ -152,7 +152,7 @@ foreach($simpleForcasts as $period) {
 }
 
 //var_dump($periodTitles);
-// var_dump($forcasts);
+// var_dump($forecasts);
 
 ?>
 
@@ -321,7 +321,7 @@ foreach($simpleForcasts as $period) {
         // var date = "Date: " + <?php print $todayString; ?>;
         // var fileOut = "File output: \"" + <?php print $newUseString; ?> + "\"";
         var queryCount = "Daily Query Count: " + <?php print $queryCount; ?> ;
-        var serverResponse = <?php print $jsonForcast;?>;
+        var serverResponse = <?php print $jsonForecast;?>;
         var conditionResponse = <?php print $jsonConditions; ?>;
         var currentCondition = "<?php print $conditionsKey; ?>";
         var astronomy = <?php print $jsonAstronomy; ?>;
