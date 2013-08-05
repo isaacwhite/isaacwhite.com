@@ -7,10 +7,14 @@ $zipCode = 10027;
 
 function getWeatherElements($iconCode,$isDay) {
     $iconHTML = "<ul class=\"weather\"><li class=\"";
+    if ($isDay) {
+        $sunMoon = " icon-sunny";
+    } else {
+        $sunMoon = " icon-night";
+    }
     if ($iconCode == "cloudy") {
         $iconHTML .= "icon-cloud";
-    } else if (($iconCode == "chancerain") ||
-            ($iconCode == "rain")) {
+    } else if ($iconCode == "rain") {
         $iconHTML .= "basecloud\"></li><li class=\"";
         $iconHTML .= "icon-rainy";
     } else if (($iconCode == "chanceflurries") ||
@@ -24,14 +28,16 @@ function getWeatherElements($iconCode,$isDay) {
         $iconHTML .= "icon-sleet";
     } else if (($iconCode == "chancetstorms") ||
         ($iconCode == "tstorms")) {
-        $iconHTML .= "basecloud\"></li><li class=\"";
+        $iconHTML .= "basecloud storm\"></li><li class=\"";
         $iconHTML .= "icon-thunder";
-    } else if (stristr($iconCode,'partly')) {
-        // if ($iconHTML == "partlycloudy") {
+    } else if ( (stristr($iconCode,'partly')) || 
+        (stristr($iconCode,'mostly')) ) {
             $iconHTML .= "basecloud\"></li><li class=\"";
-            $iconHTML .= "icon-night";
-        // }
-    } else {
+            $iconHTML .= $sunMoon;
+    } else if (stristr($iconCode,'chance')) {
+            $iconHTML .= "basecloud\"></li><li class=\"";
+            $iconHTML .= $sunMoon;
+    }else {
         if($isDay) {
             $iconHTML .= "icon-sun";
         } else {
@@ -60,10 +66,11 @@ function applyColor($temperature) {
 //actual api lookup
 $forcastLookup = "http://api.wunderground.com/api/ae1ee363833e1943/forecast/q/";
 $conditionsLookup = "http://api.wunderground.com/api/ae1ee363833e1943/geolookup/conditions/q/";
+$astronomyLookup = "http://api.wunderground.com/api/ae1ee363833e1943/astronomy/q/";
 
 //some saved responses for testing
-$forcastLookup = "forcast_";
-$conditionsLookup = "conditions_";
+// $forcastLookup = "forcast_";
+// $conditionsLookup = "conditions_";
 
 
 // Open the file to get previous page info
@@ -83,7 +90,7 @@ if ($lastDate == $today) {
 } else {
 	$queryCount = 1;
 }
-// Append a new person to the file
+// Append a new use string to the file
 $newUseString = "";
 $newUseString .= $today . "," . $queryCount;
 
@@ -92,8 +99,11 @@ file_put_contents($file, $newUseString);
 
 $jsonForcast = file_get_contents($forcastLookup . $zipCode . ".json");
 $jsonConditions = file_get_contents($conditionsLookup . $zipCode . ".json");
+$jsonAstronomy = file_get_contents($astronomyLookup . $zipCode . ".json");
 $parsedForcast = json_decode($jsonForcast);
 $parsedConditions = json_decode($jsonConditions); 
+$parsedAstronomy = json_decode($jsonAstronomy); 
+
 /*$location = $parsed_json->{'location'}->{'city'};
 $temp_f = $parsed_json->{'current_observation'}->{'temp_f'};
 $currentHigh = $parse_json->*/
@@ -105,9 +115,15 @@ $feelsLike = $currentObservation->{'feelslike_f'};;
 $conditionsKey = $currentObservation->{'icon'};
 $iconClass = getWeatherElements($conditionsKey);
 $lastUpdated = $currentObservation->{'observation_time'};
-
-$previewArray = array();
+$sunset = $parsedAstronomy->{'moon_phase'}->{'sunset'};
+$sunrise = $parsedAstronomy->{'moon_phase'}->{'sunrise'};
+$sunsetString = ($sunset->{'hour'} - 12) . ":" . ($sunset->{'minute'});
+$sunriseString = ($sunrise->{'hour'}) . ":" . ($sunrise->{'minute'});
+$periodTitles = array();
 $forecastIcons = array();
+
+// print $sunriseString;
+// print $sunsetString;
 
 foreach($forcasts as $period) {
     $title = $period->{'title'};
@@ -119,7 +135,7 @@ foreach($forcasts as $period) {
     }
 
     $iconClean = getWeatherElements($icon,$daytime);
-    array_push($previewArray, $title);
+    array_push($periodTitles, $title);
     array_push($forecastIcons, $iconClean);
 }
 $forecastTemps = array();
@@ -128,14 +144,14 @@ foreach($simpleForcasts as $period) {
     $low = $period->{'low'}->{'fahrenheit'};
     //if the first forecast is an evening value
 
-    if(!stristr($previewArray[0],'night')) {
+    if(!stristr($periodTitles[0],'night')) {
          array_push($forecastTemps,$high,$low);
     } else {
         array_push($forecastTemps,$low,$high);
     }
 }
 
-//var_dump($previewArray);
+//var_dump($periodTitles);
 // var_dump($forcasts);
 
 ?>
@@ -163,6 +179,9 @@ foreach($simpleForcasts as $period) {
             box-sizing: border-box;
         }
 
+        html {
+            /*overflow: hidden;*/
+        }
         .current .weather {
             font-size: 20rem;
             margin: 0 auto -.25em;
@@ -176,8 +195,7 @@ foreach($simpleForcasts as $period) {
         ul.weather {
             font-size: 14rem;
             text-align: center;
-            color: orange;
-            margin-bottom: -.25em;
+            margin-bottom: -.15em;
         }
         .weather p {
             font-size: 4rem;
@@ -187,8 +205,8 @@ foreach($simpleForcasts as $period) {
         }
         .wlabel {
             text-align: center;
-            padding-top: -15%;
             margin:0;
+            font-size: 1.5em;
         }
 
         .current .wlabel {
@@ -217,6 +235,12 @@ foreach($simpleForcasts as $period) {
         li.basecloud {
             position:absolute;
         }
+
+        h3 {
+            font-style: normal;
+            text-transform: uppercase;
+            font-size: .925em;
+        }
         .basecloud:before {
             font-family: "iconvault";
             font-style: normal;
@@ -228,24 +252,67 @@ foreach($simpleForcasts as $period) {
             text-decoration: inherit;
             content: '\f105';
             position:absolute;
-            color: rgb(204, 204, 204);
-        }
-        .icon-moon,
-        .icon-night {
             color: white;
         }
 
+        .basecloud.storm:before {
+            color: #4c4c4c;
+        }
+        .icon-moon,
+        .icon-night {
+            color: #f9f7af;
+        }
+
+        .icon-sun,
+        .icon-sunny,
+        .icon-sunrise,
+        .icon-thunder  {
+            color: #ffde00;
+        }
+
         footer p {
+            clear: both;
             float: right;
             bottom: 0;
-            margin: 8em 3em 0 0;
+            margin: 8em 3em 1em 0;
             color: #d7d7d7;
+            text-transform: uppercase;
+            font-size: .925em;
         }
         .hot {
             color: #ed9128;
         }
-        .cold {
+        .cold,
+        .icon-rainy{
             color: #28b3ed;
+        }
+
+        .icon-sunset {
+            color: #f96f23;
+        }
+
+        #almanac {
+            display:block;
+            text-align:center;
+        }
+        .icon-sunset,
+        .icon-sunrise {
+            font-size: 6rem;
+            display: block;
+            margin-bottom: -1.5rem;
+        }
+
+        .sunset p,
+        .sunrise p{
+            font-size: 2rem;
+            display: block;
+            margin: 0;
+        }
+
+        .sunrise,
+        .sunset {
+            display:inline-block;
+            margin: 0 2rem;
         }
 
         </style>
@@ -257,10 +324,12 @@ foreach($simpleForcasts as $period) {
         var serverResponse = <?php print $jsonForcast;?>;
         var conditionResponse = <?php print $jsonConditions; ?>;
         var currentCondition = "<?php print $conditionsKey; ?>";
+        var astronomy = <?php print $jsonAstronomy; ?>;
         console.log(serverResponse);
         console.log(conditionResponse);
         console.log(currentCondition);
         console.log(queryCount);
+        console.log(astronomy);
         </script>
     </head>
     <body>
@@ -272,28 +341,47 @@ foreach($simpleForcasts as $period) {
                 <?php print $iconClass; ?>
                 <?php print applyColor($currentTemp); ?>
             </div>
+            <div id="almanac">
+                <div class="sunrise">
+                    <ul><li class="icon-sunrise"></li></ul>
+                    <p><?php print $sunriseString; ?></p>
+                </div>
+                <div class="sunset">
+                    <ul><li class="icon-sunset"></li></ul>
+                    <p><?php print $sunsetString; ?></p>
+                </div>
+            </div>
         </div>
         <div class="preview first">
-            <h3><?php print $previewArray[0]; ?></h3>
+            <h3><?php print $periodTitles[0]; ?></h3>
             <?php print $forecastIcons[0]; ?>
             <?php print applyColor($forecastTemps[0]); ?>
         </div>
         <div class="preview second">
-             <h3><?php print $previewArray[1];  ?></h3>
+             <h3><?php print $periodTitles[1];  ?></h3>
              <?php print $forecastIcons[1]; ?>
              <?php print applyColor($forecastTemps[1]); ?>
         </div>
         <div class="preview third">
-            <h3><?php print $previewArray[2];  ?></h3>
+            <h3><?php print $periodTitles[2];  ?></h3>
                 <?php print $forecastIcons[2]; ?>
                 <?php print applyColor($forecastTemps[2]); ?>
         </div>
         <div class="preview fourth">
-             <h3><?php print $previewArray[3];  ?></h3>
+             <h3><?php print $periodTitles[3];  ?></h3>
              <?php print $forecastIcons[3]; ?>
              <?php print applyColor($forecastTemps[3]); ?>
         </div>
-
+        <div class="preview fifth">
+             <h3><?php print $periodTitles[4];  ?></h3>
+             <?php print $forecastIcons[4]; ?>
+             <?php print applyColor($forecastTemps[4]); ?>
+        </div>
+        <div class="preview sixth">
+             <h3><?php print $periodTitles[5];  ?></h3>
+             <?php print $forecastIcons[5]; ?>
+             <?php print applyColor($forecastTemps[5]); ?>
+        </div>
     </body>
     <footer>
         <p><?php print $lastUpdated?></p>
