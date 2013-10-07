@@ -4,6 +4,16 @@ $today = date("mdy"); //determine the current date as a 6 character string
 $todayString = date("m/d/y");
 $file = 'useCount.txt';
 $zipCode = 10027;
+
+//actual api lookup
+// $forcastLookup = "http://api.wunderground.com/api/ae1ee363833e1943/forecast/q/";
+// $conditionsLookup = "http://api.wunderground.com/api/ae1ee363833e1943/geolookup/conditions/q/"
+
+//some saved responses for testing
+$forcastLookup = "10027_forcast";
+$conditionsLookup = "10027_conditions";
+
+
 // Open the file to get previous page info
 $useString = file_get_contents($file);
 
@@ -28,11 +38,13 @@ $newUseString .= $today . "," . $queryCount;
 // Write the contents back to the file
 file_put_contents($file, $newUseString);
 
-$json_string = file_get_contents("http://api.wunderground.com/api/ae1ee363833e1943/forecast/q/" . $zipCode . ".json");
-$json_conditions = file_get_contents("http://api.wunderground.com/api/ae1ee363833e1943/geolookup/conditions/q/" . $zipCode . ".json");
-$parsed_json = json_decode($json_string);
-$location = $parsed_json->{'location'}->{'city'};
+$jsonForcast = file_get_contents($forcastLookup . $zipCode . ".json");
+$jsonConditions = file_get_contents($conditionsLookup . $zipCode . ".json");
+$parsedForcast = json_decode($jsonForcast);
+$parsedConditions = json_decode($jsonConditions); 
+/*$location = $parsed_json->{'location'}->{'city'};
 $temp_f = $parsed_json->{'current_observation'}->{'temp_f'};
+$currentHigh = $parse_json->*/
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -54,8 +66,8 @@ $temp_f = $parsed_json->{'current_observation'}->{'temp_f'};
         // var date = "Date: " + <?php print $todayString; ?>;
         // var fileOut = "File output: \"" + <?php print $newUseString; ?> + "\"";
         var queryCount = "Daily Query Count: " + <?php print $queryCount; ?> ;
-        var serverResponse = <?php print $json_string;?>;
-        var conditionResponse = <?php print $json_conditions; ?>;
+        var serverResponse = <?php print $jsonForcast;?>;
+        var conditionResponse = <?php print $jsonConditions; ?>;
         console.log(serverResponse);
         console.log(conditionResponse);
         // console.log(date);

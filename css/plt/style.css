@@ -1,0 +1,27 @@
+* {
+	box-sizing: border-box;
+}
+#page {
+	max-width: 60rem;
+}
+
+.firstHeader,
+.bigParagraph {
+	background-color: white;
+	padding: 4px;
+	margin: 5px;
+}
+
+.bigParagraph {
+	padding: 0;
+	margin: 0;
+	font-family: "Georgia", serif;
+}
+
+.firstGrid img {
+	width: 25%;
+}
+
+.secondGrid img {
+	width: 50%;
+} 
