@@ -275,6 +275,38 @@ a:hover {
       display: inherit; }
   #portfolio .contain {
     display: inline; }
+  #portfolio li {
+    height: 10rem;
+    width: 12rem;
+    background-color: white;
+    color: black;
+    border-radius: 2px;
+    padding: 1rem; }
+    #portfolio li:after {
+      content: ""; }
+    #portfolio li:hover {
+      cursor: -moz-grab;
+      cursor: -webkit-grab;
+      cursor: grab; }
+  #portfolio .toggle-animation {
+    display: block;
+    height: 2rem;
+    width: 7rem;
+    text-align: center;
+    line-height: 2rem;
+    margin: 0 auto;
+    background-color: white;
+    color: black;
+    border-radius: 2px;
+    padding: .5rem; }
+    #portfolio .toggle-animation:hover {
+      cursor: pointer; }
+  #portfolio .web-region ul {
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    padding: 0;
+    overflow: hidden; }
 
 #fancybox-thumbs li:after {
   content: ''; }
