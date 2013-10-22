@@ -1,49 +1,80 @@
 var IW = {animating:false};
 IW.animationID = undefined;
-IW.animationRotation = 0;
+IW.animationRotation = undefined;
 IW.dragging = undefined;
 IW.carouselCenter = undefined;
+IW.cardDimensions = undefined;
 
 
 IW.getCircularPositioning = function(percent,radiusPx,centerPos) {
-	percent = (IW.animationRotation + percent)%1 - .25;
+	percent = percent%1 - .25;
 	// console.log(percent);
 	if (!(-.25 < percent && percent < .25)) {
 		percent = percent - .5;
 	}
 	var radAngle = percent * 2 * Math.PI - (.5 * Math.PI);
-	var xValue = radiusPx * Math.cos(radAngle) + radiusPx;
-	var yValue = radiusPx * Math.sin(radAngle) + radiusPx + 20;
+
+	// console.log("X offset: " + Math.cos(radAngle));
+	// console.log("Y offset: " + Math.sin(radAngle));
+	var degAngle = radAngle * 180/Math.PI;
+	console.log("Angle as degrees:" + degAngle);
+	var yOffset = IW.cardDimensions.h/2;
+	var xOffset = IW.cardDimensions.w/2;
+
+	// var xValue = (radiusPx * Math.cos(radAngle)) + radiusPx + (Math.sin(radAngle) * (width/2)) + (Math.cos(radAngle) * (height/2));
+	// var yValue = (radiusPx * Math.sin(radAngle)) + radiusPx  - (Math.cos(radAngle) * (height/2)) + 20;
+
+	// console.log()
+	console.log(Math.cos(radAngle));
+	console.log(Math.sin(radAngle));
+	var xValue = centerPos.x + (radiusPx * Math.cos(radAngle));
+	var yValue = centerPos.y + (radiusPx * Math.sin(radAngle)) + 20;
 	var coord = {x:xValue,y:yValue};
 	var rotAngle = percent * 360;
+	// rotAngle = 0;
 
 	var result = {loc:coord,rot:rotAngle};
 	return result;
 }
 
 IW.setRotation = function(degRotation) {
-	IW.animationRotation =+ degRotation/360;
+	//if we haven't set a rotation yet, let's do this.
+	// if (IW.animationRotation === undefined) {
+	// 	IW.animationRotation = degRotation/360;
+	// }
 	IW.degreeRotation = degRotation;
+
 	var container = IW.carousel;
 	var children = container.children();
 	var itemCount = children.length;
-	var radius = ((IW.currentWinWidth-200)/2);
-	var centerX = IW.currentWinWidth/2;
-	var centerY = (IW.currentWinHeight/2) + 20;
+	var radius = $(".web-region").width()/2;
+	var offsetCheck = $(".web-region").offset();
+	var centerX = radius;
+	var centerY = radius;
 	var thisCenter = {x:centerX, y:centerY};
 	IW.carouselCenter = thisCenter;
 	var itemWidth = $(".web-region ul li").width();
+	var itemHeight = $(".web-region ul li").height();
+
+	IW.cardDimensions = {h:itemHeight,w:itemWidth};
+
 	container.css({
 		width: IW.currentWinWidth - 200,
 		height: radius/2
 	});
+	
+
 	for(var i = 0; i < children.length; i++){
 		var itemNumber = i;
-		var percent = itemNumber/(children.length * 2);
+		var percent = itemNumber/(children.length * 2) + degRotation/360;
 		var returnVal = IW.getCircularPositioning(percent,radius,thisCenter);
-		var rotateString = "rotate(" + returnVal.rot + "deg)";
-		var xPosition = returnVal.loc.x - itemWidth/2;
+		var rotateString = "rotate(" + returnVal.rot + "deg) translate(-" + IW.cardDimensions.w/2 + "px)";
+		var xPosition = returnVal.loc.x;
 		var yPosition = returnVal.loc.y;
+		var circle = $("<div class='circle'></div>").css({height:2,width:2,"border-radius":"9999px",border:"1px solid red",top:yPosition,left:xPosition});
+		// $(".web-region ul").append(circle);
+		console.log($(children[i]).text());
+		// console.log("angle: " + percent);
 		$(children[i]).css({
 			position:"absolute",
 			left:xPosition,
@@ -51,43 +82,6 @@ IW.setRotation = function(degRotation) {
 			transform: rotateString
 		});
 	}
-}
-
-IW.startAnimation = function() {
-	var container = $(".web-region ul");
-	var test = container.children();
-	var itemCount = test.length;
-	var radius = ((IW.currentWinWidth-200)/2);
-	var centerX = IW.currentWinWidth/2;
-	var centerY = IW.currentWinHeight/2;
-	var thisCenter = {x:centerX, y:centerY};
-	IW.carouselCenter = thisCenter;
-	var itemWidth = $(".web-region ul li").width();
-	console.log(itemWidth);
-	container.css({
-		width: IW.currentWinWidth - 200,
-		height: radius/2
-	});
-	var id = setInterval(function(){
-		for(var i = 0; i < test.length; i++){
-			var itemNumber = i;
-			var percent = itemNumber/(test.length * 2);
-			var returnVal = IW.getCircularPositioning(percent,radius,thisCenter);
-			// console.log(returnVal);
-			var rotateString = "rotate(" + returnVal.rot + "deg)";
-			var xPosition = returnVal.loc.x - itemWidth/2;
-			var yPosition = returnVal.loc.y + 20;
-			$(test[i]).css({
-				position:"absolute",
-				left:xPosition,
-				top: yPosition,
-				transform: rotateString
-			});
-		}
-		IW.animationRotation += .003;
-	},17);
-
-	return id;	
 }
 
 IW.animateWithMouse = function(xPos,yPos) {
@@ -129,16 +123,6 @@ $(".art").click(function(e) {
 	 }, false);
 });
 
-$(".toggle-animation").click(function() {
-	if(!IW.animating) {
-		IW.animationID = IW.startAnimation();
-		IW.animating = true;
-	} else {
-		clearInterval(IW.animationID);
-		IW.animating = false;
-	}
-})
-
 $(".web-region ul li").mousedown(function() {
 	IW.dragging = true;
 	$(document).mousemove(function(e){
@@ -146,7 +130,7 @@ $(".web-region ul li").mousedown(function() {
 			var xPos = e.pageX;
 			var yPos = e.pageY;
 			IW.animateWithMouse(xPos,yPos);
-			$(".print-region h2").html(IW.degreeRotation);
+			$(".print-region h2").html(IW.carouselCenter.x + "," + IW.carouselCenter.y);
 		},17);
 	});
 });
@@ -171,7 +155,7 @@ $(document).ready(function () {
 	var thisCenter = {x:centerX, y:centerY};
 	var itemWidth = $(".web-region ul li").width();
 
-	container.css({
+	$(".web-region").css({
 		width: IW.currentWinWidth - 200,
 		height: radius/2
 	});
