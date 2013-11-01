@@ -1,69 +1,192 @@
-var IW = {animating: false};
-IW.animationID = undefined;
-IW.animationRotation = 0;
-IW.dragging = undefined;
-IW.carouselCenter = undefined;
-IW.cardDimensions = undefined;
+var IW = {};
 
-//function to calculate coordinates of element on circle
-//simple enough, though not sure if it should be modeled as some kind of other obj
-IW.getQuadrant = function(xPos,yPos) {
-    if (xPos > IW.carouselCenter.x) {
-        //quadrants 1 or 2
-        if (yPos > IW.carouselCenter.y) {
-            return 1;
-        } else {
-            return 2;
-        }
-    } else {
-        //quadrants 3 or 4
-        if (yPos > IW.carouselCenter.y) {
-            return 4;
-        } else {
-            return 3;
-        }
+var IW = {animating: false};
+IW.animationID;
+IW.animationRotation;
+IW.dragging;
+IW.carouselCenter;
+IW.cardDimensions;
+
+//this should be more elegant.
+//model a carousel object itself?!
+//contain carousel within object
+
+IW.RadialCarousel = function(center,radius,jQDomContainer) {
+
+    var Child = function(domElement,queuePosition,cssProperties) {
+        this.domObj = domElement;
+        this.positionInQueue = queuePosition;
+        this.css = cssProperties;
     }
+
+    this.center = center;
+    this.radius = radius;
+    //expecting a jQuery object for jQuery methods.
+    this.domElement = jQDomContainer;
+    this.children = [];
+    this.zIndexMap = [];
+    var domChildren = jQDomContainer.children();
+    var zIndexMax = Math.ceil(domChildren.length / 2);
+    //just check that it's not even, or we could have problems.
+    if ((zIndexMax % 2) === 0) {
+        zIndexMax++;
+    }
+    var decrease = true;
+    var thisZIndex = zIndexMax;
+    //loop to make out zIndexMap and our slide objects
+    for (var i = 0; i<domChildren.length; i++) {
+        this.zIndexMap.push(thisZIndex);
+        this.children.push(new Child(domChildren[i],i,null));
+        if (decrease) {
+            thisZIndex--;
+        } else {
+            thisZIndex++;
+        }
+        if (thisZIndex === 0) {
+            thisZIndex++;
+            decrease = false;
+        }
+     }
+    //initialize the list of children.
+
+    this.items = this.domElement.children();
+    this.itemCount = this.items.length;
+    // this.setAngle(0); //initialize with 0 initial angle
+}
+/**
+ * A function that controls the angle setting on the carousel
+ * @param an angle in degrees. Positive or negative
+ * @return Nothing, sets rotation on carousel.
+ */
+IW.RadialCarousel.prototype.setAngle = function(angleInDeg) {
+    //prevents values that are not 0 < x < 360
+    var limitAngle = function(rawAngle) {
+        var angle = rawAngle % 360;
+            if (angle < 0) {
+                angle = angle + 360;
+            }
+            
+        return angle;
+    }
+
+    var angle = angleInDeg + 270;//correct for starting from 3 oclock position.
+    angle = limitAngle(angle);//constrain it to positive values less than 360.
+
+
 }
 
-//this is good.
-IW.getAngle = function(xPos,yPos) {
+IW.RadialCarousel.prototype.limitAngle = function(someAngle) {
+    //will we need this?
+    //we might not
+}
+
+IW.RadialCarousel.prototype.rotateByRelativeAngle = function(xPos,yPos) {
+    var getQuadrant = function (xPos,yPos) {
+        var quad = -1;
+        if (xPos >= this.center.x) {
+            //quadrants 1 or 2
+            if (yPos >= this.center.y) {
+                quad = 2;
+            } else {
+                quad = 1;
+            }
+        } else {
+            //quadrants 3 or 4
+            if (yPos >= this.center.y) {
+                quad = 3;
+            } else {
+                quad = 4;
+            }
+        }
+
+        return quad;
+    }
+    var calculateTanAngle = function (xPos,yPos) {
+        var deltaX = xPos - this.center.x;
+        var deltaY = yPos - this.center.y;
+        var rawAngle = Math.atan(deltaY/deltaX) * (180/Math.PI);
+
+        return rawAngle;
+    }
+    var adjTanAngle = function (angle,quadrant) {
+        if (quadrant === 1 || quadrant === 2) {
+            adjAngle = 90 + rawAngle;
+        } else {
+            adjAngle = 270 + rawAngle;
+        }
+
+        return adjAngle;
+    }
+
+    var rawAngle = calculateTanAngle(xPos,yPos,yCenter);
+    var quad = getQuadrant(xPos,yPos);
+    var adjAngle = adjTanAngle(rawAngle,quad);
+
+    this.setAngle(adjAngle);
+
+    //don't return anything.
+
+}
+
+IW.getAngle = function (xPos,yPos) {
+    //references global variables for carousel center.
     //a private function
-    var getQuadrant = function(xPos,yPos) {
+    var getQuadrant = function (xPos,yPos) {
+        var quad = -1;
         if (xPos >= IW.carouselCenter.x) {
             //quadrants 1 or 2
             if (yPos >= IW.carouselCenter.y) {
-                return 2;
+                quad = 2;
             } else {
-                return 1;
+                quad = 1;
             }
         } else {
             //quadrants 3 or 4
             if (yPos >= IW.carouselCenter.y) {
-                return 3;
+                quad = 3;
             } else {
-                return 4;
+                quad = 4;
             }
         }
+
+        return quad;
     }
 
-    var quad = getQuadrant(xPos,yPos);
+    var calculateAngle = function (xStart,yStart,xEnd,yEnd) {
+        var deltaX = xPos - xCenter;
+        var deltaY = yPos - yCenter;
+        var rawAngle = Math.atan(deltaY/deltaX) * (180/Math.PI);
+
+        return rawAngle;
+    }
+
+    var constrainAngle = function (angle,quadrant) {
+        if (quad === 1 || quad === 2) {
+            adjAngle = 90 + rawAngle;
+        } else {
+            adjAngle = 270 + rawAngle;
+        }
+
+        return adjAngle;
+    }
+
+
+    /*FUNCTION BODY*/
     var xCenter = IW.carouselCenter.x;
     var yCenter = IW.carouselCenter.y;
-    var deltaX = xPos - xCenter;
-    var deltaY = yPos - yCenter;
-    var rawAngle = Math.atan(deltaY/deltaX) * (180/Math.PI);
-    var adjAngle;
-
-    if (quad === 1 || quad === 2) {
-        adjAngle = 90 + rawAngle;
-    } else {
-        adjAngle = 270 + rawAngle;
-    }
+    
+    var rawAngle = calculateAngle(xPos,yPos,xCenter,yCenter);
+    var quad = getQuadrant(xPos,yPos);
+    var adjAngle = constrainAngle(quad,rawAngle);
 
     return adjAngle;
 
 }
+
 //this could have problems.
+//We shouldn't correct percent requests, in fact, it's silly to allow input in this format.
+//Let's just take in degrees and use the same correction function we've already written to fix it
+//That would work.
 IW.getCircularPositioning = function (percent, radiusPx, centerPos) {
     "use strict";
     //rotate so that the first element starts at the 12 oclock position
@@ -94,14 +217,20 @@ IW.getCircularPositioning = function (percent, radiusPx, centerPos) {
 }
 
 //this could also have problems
+//looks like this does not have a closing bracket!! Inspect!!
+//WHOA!!! OUT OF CONTROL!
 IW.setRotation = function (degRotation) {
-    IW.degreeRotation = degRotation;
+
+
+    IW.degreeRotation = degRotation;//do we need this?
     //degree rotation is set ot whatever rotation we request for the slider on initial call.
 
+    //correct rotation for clockwise positioning
     degRotation = degRotation + 270;
     if (degRotation >= 360) {
         degRotation = degRotation - 360;
     }
+
 
     var container = IW.carousel;
     var children = container.children();
@@ -141,22 +270,14 @@ IW.setRotation = function (degRotation) {
         var angularString = ""
         
         var correctAngle = function(angle) {
-            
-            if( (-90 > angle) || (angle > 90) ) {
-                //we have to correct it.
-                if (angle > 0) {
-                    while (angle > 90) {
-                        angle = angle - 180;
-                    }
-                } else {
-                    while (angle < -90) {
-                        angle = angle + 180;
-                    }
-                }
-                return angle;
-            } else {
-                return angle;
+            //constrain to positive values less than 360.
+            angle = angle % 360;
+            if (angle < 0) {
+                angle = angle + 360;
             }
+            
+            return angle;
+
         }
         
         for (var i = 0; i < itemCount; i++) {
@@ -247,9 +368,8 @@ IW.setRotation = function (degRotation) {
 }
 
 //could have problems.
+//wrapper function for animating to position? Really nothing to do with a mouse.
 IW.animateWithMouse = function (xPos,yPos) {
-
-    
     var thisAngle = IW.getAngle(xPos,yPos);
     var startAngle = IW.getAngle(IW.dragStart.x,IW.dragStart.y);
 
@@ -262,34 +382,35 @@ IW.animateWithMouse = function (xPos,yPos) {
 }
 
 //EVENT HANDLERS
+//AJAX
+    $(".web").click( function (e) {
+        window.history.pushState(null,null,"/portfolio/web")
+         e.preventDefault();
+        $.get("/portfolio/ajax/web.html")
+         .done(function( data ) {
+            $(".web-region").html(data);
+         }, false);
+    });
 
-$(".web").click( function (e) {
-    window.history.pushState(null,null,"/portfolio/web")
-     e.preventDefault();
-    $.get("/portfolio/ajax/web.html")
-     .done(function( data ) {
-        $(".web-region").html(data);
-     }, false);
-});
+    $(".print").click( function (e) {
+        window.history.pushState(null,null,"/portfolio/print")
+         e.preventDefault();
+        $.get("/portfolio/ajax/print.html")
+         .done(function( data ) {
+            $(".print-region").html(data);
+         }, false);
+        
+    });
+    $(".art").click(function(e) {
+        window.history.pushState(null,null,"/portfolio/art")
+         e.preventDefault();
+        $.get("/portfolio/ajax/art.html")
+         .done(function( data ) {
+            $(".art-region").html(data);
+         }, false);
+    });
 
-$(".print").click( function (e) {
-    window.history.pushState(null,null,"/portfolio/print")
-     e.preventDefault();
-    $.get("/portfolio/ajax/print.html")
-     .done(function( data ) {
-        $(".print-region").html(data);
-     }, false);
-    
-});
-$(".art").click(function(e) {
-    window.history.pushState(null,null,"/portfolio/art")
-     e.preventDefault();
-    $.get("/portfolio/ajax/art.html")
-     .done(function( data ) {
-        $(".art-region").html(data);
-     }, false);
-});
-
+//this should show the code. If we need to do further processing on the code highlighting let's put it somewhere else.
 $(".see-code").click( function (e) {
      e.preventDefault();
     $.get("/js/main.js")
@@ -319,6 +440,9 @@ $(".see-code").click( function (e) {
      }, false);
 });
 
+//here's a listener for mousedown on a list item. it needs to do two things:
+//1. Turn on dragging / mousemove
+//2. Initiate a function to rotate the slider by angle of mouse
 $(".web-region ul li").mousedown(function() {
     $(document).mousemove( function (e){
         //only execute after first mousemove
@@ -341,25 +465,21 @@ $(".web-region ul li").mousedown(function() {
     });
 });
 
+
+//here's a listener on mouseup. It needs to do two things:
+// 1. Turn off dragging / mousemove detection
+// 2. Record where we stopped.
 $(document).mouseup(function() {
     console.log("Mouseup!");
     if (IW.dragging) {
         $(document).off("mousemove");
         IW.dragging = false;
 
-        // set rotation.
-
-        //vodoo magic!!
-        // if (IW.degreeRotation < -90 || IW.degreeRotation > 90) {
-        //     console.log("Out of bounds!");
-        //     if (IW.degreeRotation < -90) {
-        //         IW.degreeRotation += 90;
-        //     }
-        //     if (IW.degreeRotation > 90) {
-        //         IW.degreeRotation -= 90;
-        //     }
-        // }
+        //IW.degreeRotation must be set somewhere else.
         IW.animationRotation = IW.degreeRotation;
+
+        //this correction should happen somewhere else.
+        //MAIN FUNCTION FOR ANGLE CORRECTION!!
         if (IW.degreeRotation >= 360) {
             IW.degreeRotation = IW.degreeRotation - 360;
         }
@@ -367,10 +487,13 @@ $(document).mouseup(function() {
     }
 });
 
-IW.currentWinWidth = $(window).width();
-IW.currentWinHeight = $(window).height();
 
+
+//ignore this for now.
 $(document).ready(function () {
+    IW.currentWinWidth = $(window).width();
+    IW.currentWinHeight = $(window).height();
+    //make a carousel
     IW.carousel = container = $(".web-region ul");
     var test = container.children();
     var itemCount = test.length;
@@ -391,6 +514,6 @@ $(document).ready(function () {
         height: radius / 2
     });
 
-    IW.setRotation(0); //0 should be the 12 oclock position here.
+    IW.setRotation(720); //0 should be the 12 oclock position here.
     
 });
