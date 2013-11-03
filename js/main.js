@@ -18,7 +18,12 @@ IW.RChild = function(domElement,queuePosition,cssProperties) {
 }
 
 IW.RChild.prototype.setPosition = function(transformObject) {
-
+    var xPos = transformObject.x;
+    var yPos = transformObject.y;
+    var rotation = transformObject.rot;
+    var xTranslate = transformObject.xTrans;
+    var yTranslate = transformObject.yTrans;
+    var opacity = transformObject.opacity;
 }
 
 IW.RadialCarousel = function(center,radius,jQDomContainer) {

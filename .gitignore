@@ -2,5 +2,6 @@
 .DS_Store*
 !.gitkeep
 *.json
+/css/.sass-cache
 /css/.sass-cache/*sftp-config.json
 node-modules
