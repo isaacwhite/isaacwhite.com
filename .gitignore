@@ -4,4 +4,4 @@
 *.json
 /css/.sass-cache
 /css/.sass-cache/*sftp-config.json
-node-modules
+node_modules
