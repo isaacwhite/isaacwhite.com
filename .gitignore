@@ -3,3 +3,4 @@
 !.gitkeep
 *.json
 /css/.sass-cache/*sftp-config.json
+node-modules

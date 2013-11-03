@@ -12,6 +12,7 @@
 
         <link rel="stylesheet" href="../css/normalize.min.css">
         <link rel="stylesheet" href="../css/style.css">
+        <link rel="stylesheet" href="../css/vendor/sunburst.css">
         <script src="../js/vendor/modernizr-2.6.2.min.js"></script>
         <link rel="stylesheet" href="../js/fancybox/source/jquery.fancybox.css?v=2.1.4" type="text/css" media="screen" />
         
@@ -25,7 +26,6 @@
         <div id="portfolio">
             <h1><a href="/">ISAAC WHITE</a> / PORTFOLIO</h1>
 
-            <div class="toggle-animation">Start Animation</div>
             <div class="web-region">
                 <a class="web" href="/portfolio/web"><h2>Web</h2>
                     <img src="webThumb.jpg"/>
@@ -46,11 +46,16 @@
                 <a class="print" href="/portfolio/print"><h2>Print</h2>
                     <img src="something.jpg"/>
                 </a>
+                <div class="under-the-hood">
+                <a class="see-code" href="/js/main.js"><h2>Like the slider? Check out the code.</h2></a>
+                 <code id="javascript-view" class="code-view prettyprint"></code>
+                </div>
                 
             </div>
             <div class="art-region">
                 <a class="art" href="/portfolio/art">
                     <h2>Artwork</h2>
+                    <h3>Test area</h3>
                     <img class="section-thumb" src="something.jpg">
                 </a>
                 <div id="art" class="contain">
@@ -102,7 +107,7 @@
                 });
             });
         </script>
-
+        <script src="../js/vendor/prettify.js"></script>
         <script src="../js/main.js"></script>
     </body>
 </html>

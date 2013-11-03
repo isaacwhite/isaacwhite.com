@@ -242,6 +242,12 @@ a:hover {
 
 /**PORTFOLIO**/
 #portfolio {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   max-width: 80em;
   margin: 0 auto;
   text-align: center; }
@@ -280,8 +286,11 @@ a:hover {
     width: 12rem;
     background-color: white;
     color: black;
+    transform-origin: top left;
+    -webkit-transform-origin: top left;
     border-radius: 2px;
-    padding: 1rem; }
+    padding: 1rem;
+    border: 1px solid #d7d7d7; }
     #portfolio li:after {
       content: ""; }
     #portfolio li:hover {
@@ -301,15 +310,33 @@ a:hover {
     padding: .5rem; }
     #portfolio .toggle-animation:hover {
       cursor: pointer; }
-  #portfolio .web-region ul {
+  #portfolio .web-region {
     display: block;
     margin: 0 auto;
     position: relative;
-    padding: 0;
-    overflow: hidden; }
+    padding: 0; }
+  #portfolio .circle {
+    position: absolute;
+    left: 0;
+    top: 20px;
+    z-index: 2; }
+  #portfolio .square {
+    position: absolute;
+    left: 0;
+    top: 20px;
+    z-index: -2; }
+  #portfolio .under-the-hood {
+    text-align: left; }
+    #portfolio .under-the-hood .code-view {
+      white-space: pre; }
+    #portfolio .under-the-hood .operator {
+      color: red; }
 
 #fancybox-thumbs li:after {
   content: ''; }
 
 footer p {
   margin-bottom: .25em; }
+
+html {
+  height: 100%; }

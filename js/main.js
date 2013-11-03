@@ -11,14 +11,17 @@ IW.cardDimensions;
 //model a carousel object itself?!
 //contain carousel within object
 
+IW.RChild = function(domElement,queuePosition,cssProperties) {
+    this.domObj = domElement;
+    this.positionInQueue = queuePosition;
+    this.css = cssProperties;
+}
+
+IW.RChild.prototype.setPosition = function(transformObject) {
+
+}
+
 IW.RadialCarousel = function(center,radius,jQDomContainer) {
-
-    var Child = function(domElement,queuePosition,cssProperties) {
-        this.domObj = domElement;
-        this.positionInQueue = queuePosition;
-        this.css = cssProperties;
-    }
-
     this.center = center;
     this.radius = radius;
     //expecting a jQuery object for jQuery methods.
@@ -34,44 +37,83 @@ IW.RadialCarousel = function(center,radius,jQDomContainer) {
     var decrease = true;
     var thisZIndex = zIndexMax;
     //loop to make out zIndexMap and our slide objects
-    for (var i = 0; i<domChildren.length; i++) {
+    for (var i = 0; i < domChildren.length; i++) {
         this.zIndexMap.push(thisZIndex);
-        this.children.push(new Child(domChildren[i],i,null));
+        this.children.push(new IW.RChild(domChildren[i],i,null));
         if (decrease) {
             thisZIndex--;
         } else {
             thisZIndex++;
         }
-        if (thisZIndex === 0) {
-            thisZIndex++;
+        if (thisZIndex < 1) {
+            thisZIndex = 1;//start from 1 again.
             decrease = false;
         }
      }
+     this.itemCount = this.children.length;
     //initialize the list of children.
-
-    this.items = this.domElement.children();
-    this.itemCount = this.items.length;
-    // this.setAngle(0); //initialize with 0 initial angle
+    this.setAngle(0); //initialize with 0 initial angle
 }
 /**
  * A function that controls the angle setting on the carousel
  * @param an angle in degrees. Positive or negative
  * @return Nothing, sets rotation on carousel.
  */
-IW.RadialCarousel.prototype.setAngle = function(angleInDeg) {
+IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
+    var that = this; //lets allow the inner functions to see "this"
     //prevents values that are not 0 < x < 360
     var limitAngle = function(rawAngle) {
         var angle = rawAngle % 360;
             if (angle < 0) {
                 angle = angle + 360;
             }
-            
+            //OPTIONAL CONSTRAIN TO HALF
+            angle = angle % 180;
         return angle;
     }
 
-    var angle = angleInDeg + 270;//correct for starting from 3 oclock position.
-    angle = limitAngle(angle);//constrain it to positive values less than 360.
 
+    //we're now going to be passed one adjusted angle for the start positioning
+    //we'll need to use this angle to set hte position of all the other
+    //cards.
+    var calculatePositioning = function(adjAngle) {
+        var currentAngle;//to set the currentAngle for the children
+            //more variables here?
+        var angleRange = (360/(that.itemCount * 2));
+        //we'll draw the first element from the adjAngle location
+        //and then map the zIndexMap onto the elements by position counting from 270 -> 90
+        var mapCalc = [];
+        currentAngle = adjAngle;//guranteed less than 180.
+        for (var i = 0; i < that.children.length; i++) {
+            if ((currentAngle > 90) && (currentAngle < 270)) {
+                currentAngle += 180;
+            }
+            mapCalc.push({"ang": currentAngle, "li": i});
+            currentAngle += angleRange;
+            currentAngle = currentAngle % 360;//prevent going past 360.
+        }
+    }
+
+    // var angle = angleInDeg + 270;//correct for starting from 3 oclock position.
+    // angle = limitAngle(angle);//constrain it to positive values less than 360.
+
+
+    //  for (var i = 0; i < this.Children; i++) {
+    //     //the first item always gets drawn starting from IW.animationRotation
+    //     var angularPosition = (degRotation - 270) + (i * angleRange);
+        
+    //     //try to fix this.
+    //     angularPosition = correctAngle(angularPosition);
+
+    //     angularString += i + ": " + angularPosition + ", ";
+    //     var indexCount, zIndexVal;
+    //     var startPos = 0 - (angleRange / 2);
+        
+
+    //     zIndexMapping[i] = zIndexVal;
+    // }
+    var angle = limitAngle(inputDegAngle);
+    calculatePositioning(angle);
 
 }
 
@@ -187,7 +229,7 @@ IW.getAngle = function (xPos,yPos) {
 //We shouldn't correct percent requests, in fact, it's silly to allow input in this format.
 //Let's just take in degrees and use the same correction function we've already written to fix it
 //That would work.
-IW.getCircularPositioning = function (percent, radiusPx, centerPos) {
+IW.getCircularPositioning = function(percent, radiusPx, centerPos) {
     "use strict";
     //rotate so that the first element starts at the 12 oclock position
     percent = percent % 1 - 0.25;
