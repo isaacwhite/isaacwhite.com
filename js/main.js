@@ -11,19 +11,39 @@ IW.cardDimensions;
 //model a carousel object itself?!
 //contain carousel within object
 
-IW.RChild = function(domElement,queuePosition,cssProperties) {
-    this.domObj = domElement;
+IW.RChild = function(domElement,queuePosition,parent) {
+    //initialize element
+    this.domElement = domElement;
+    this.parent = parent;
     this.positionInQueue = queuePosition;
-    this.css = cssProperties;
+    this.css;
 }
 
-IW.RChild.prototype.setPosition = function(transformObject) {
+IW.RChild.prototype.setPositioning = function(transformObject,position) {
+    //this function should store the 
+
     var xPos = transformObject.x;
     var yPos = transformObject.y;
     var rotation = transformObject.rot;
     var xTranslate = transformObject.xTrans;
     var yTranslate = transformObject.yTrans;
-    var opacity = transformObject.opacity;
+    var zIndex = transformObject.zIndex;
+
+    var transformString = "rotate(" + rotation + 
+                          ") translate(" + xTranslate + "," + yTranslate +
+                          ")";
+
+    this.css = transformObject;
+    this.positionInQueue = position;
+    var domElement = this.domElement;
+    $(domElement).css({
+        "position" : "absolute",
+        "top"      : yPos,
+        "left"     : xPos,
+        "z-index"  : zIndex,
+        "transform": transformString
+    })
+    // var opacity = transformObject.opacity; we won't use this at first.
 }
 
 IW.RadialCarousel = function(center,radius,jQDomContainer) {
@@ -44,7 +64,7 @@ IW.RadialCarousel = function(center,radius,jQDomContainer) {
     //loop to make out zIndexMap and our slide objects
     for (var i = 0; i < domChildren.length; i++) {
         this.zIndexMap.push(thisZIndex);
-        this.children.push(new IW.RChild(domChildren[i],i,null));
+        this.children.push(new IW.RChild(domChildren[i],i,this));
         if (decrease) {
             thisZIndex--;
         } else {
@@ -65,7 +85,7 @@ IW.RadialCarousel = function(center,radius,jQDomContainer) {
  * @return Nothing, sets rotation on carousel.
  */
 IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
-    var that = this; //lets allow the inner functions to see "this"
+    var that = this; //let's allow the inner functions to see "this"
     //prevents values that are not 0 < x < 360
     var limitAngle = function(rawAngle) {
         var angle = rawAngle % 360;
@@ -81,51 +101,89 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
     //we're now going to be passed one adjusted angle for the start positioning
     //we'll need to use this angle to set hte position of all the other
     //cards.
-    var calculatePositioning = function(adjAngle) {
-        var currentAngle;//to set the currentAngle for the children
-            //more variables here?
+    var calculateOrder = function(adjAngle) {
+        var returnObj = {};
+        var childCount = that.children.length;
         var angleRange = (360/(that.itemCount * 2));
-        //we'll draw the first element from the adjAngle location
-        //and then map the zIndexMap onto the elements by position counting from 270 -> 90
-        var mapCalc = [];
-        currentAngle = adjAngle;//guranteed less than 180.
-        for (var i = 0; i < that.children.length; i++) {
-            if ((currentAngle > 90) && (currentAngle < 270)) {
-                currentAngle += 180;
-            }
-            mapCalc.push({"ang": currentAngle, "li": i});
-            currentAngle += angleRange;
-            currentAngle = currentAngle % 360;//prevent going past 360.
-        }
-        console.log(mapCalc);
+        var startIndex = (Math.round(adjAngle / angleRange)) % childCount;
+        //the element that is closest to center is startIndex
+        returnObj.swipe = angleRange;
+        returnObj.start = startIndex;
+        
+        return returnObj;
     }
+    
+    //this takes an angle betwee 0 and 180 degrees, so 
+    var getRotationInfo = function(angle) {
+        var rotAngle, //rotation value in degrees to align with circumference
+            radAngle, //angle as radians
+            trigAngle, //deg angle compatible with standard trig calcs
+            xCenter, //x center of carousel
+            yCenter, //y center of carousel
+            radius, //radius of carousel
+            xVal, //calculated x position for current angle on circumference
+            yVal, //calculated y position for current angle on circumference
+            results; //returnable results.
+        if (angle <= 90) {
+            trigAngle = 90 - angle;
+            rotAngle = angle;
+        } else {  //it must be bigger
+            trigAngle = 90 + (180 - angle);
+            rotAngle = 90 - angle;
+        }
+        radAngle = (trigAngle * Math.PI) / 180;
+        xCenter = that.center.x;
+        yCenter = that.center.y;
+        radius = that.radius;
+        //separate the values we're offsetting from by the location
+        xVal = xCenter + (radius * Math.cos(radAngle));
+        yVal = yCenter - (radius * Math.sin(radAngle));
+        results = {
+            "x"   : xVal,
+            "y"   : yVal,
+            "rot" : rotAngle
+        };
+        return results;
+    }
+    //calculates positioning and sets them on all children
+    var calcPos = function(startIndex,adjAngle,swipe) {
+        var offset = adjAngle % swipe;
+        var currentAngle = adjAngle;
+        var rotationInfo, //return value for a current rotation
+            cssValues,
+            domElement, //transform objects for child.
+            currentWidth; //with of current item
+        currentElement = startIndex;
+        for (var i = 0; i< that.children.length; i++) {
 
-    // var angle = angleInDeg + 270;//correct for starting from 3 oclock position.
-    // angle = limitAngle(angle);//constrain it to positive values less than 360.
+            console.log(currentElement);
+            currentZIndex = that.zIndexMap[i];
+            //get the rotation information to apply to the elements
+            rotationInfo = getRotationInfo(currentAngle);
+            domElement = that.children[currentElement].domElement;
+            currentWidth = $(domElement).width();
 
-
-    //  for (var i = 0; i < this.Children; i++) {
-    //     //the first item always gets drawn starting from IW.animationRotation
-    //     var angularPosition = (degRotation - 270) + (i * angleRange);
-        
-    //     //try to fix this.
-    //     angularPosition = correctAngle(angularPosition);
-
-    //     angularString += i + ": " + angularPosition + ", ";
-    //     var indexCount, zIndexVal;
-    //     var startPos = 0 - (angleRange / 2);
-        
-
-    //     zIndexMapping[i] = zIndexVal;
-    // }
+            cssValues = {
+                "x"      : rotationInfo.x,
+                "y"      : rotationInfo.y,
+                "rot"    : rotationInfo.rot,
+                "zIndex" : currentZIndex,
+                //for now let's hard code the translation
+                "xTrans" : currentWidth/2,
+                "yTrans" : 0
+            }
+            that.children[currentElement].setPositioning(cssValues,i);
+            //we have to do something with this now.
+            //at the end of the loop, move to next element
+            currentAngle = currentAngle + swipe;
+            currentElement = (currentElement + 1) % that.children.length;
+        }
+        //currentElement should now be equal to startIndex again.
+        //we'll use offset to calculate all other rotations.
+    } 
     var angle = limitAngle(inputDegAngle);
-    calculatePositioning(angle);
-
-}
-
-IW.RadialCarousel.prototype.limitAngle = function(someAngle) {
-    //will we need this?
-    //we might not
+    var returnObj = calculateOrder(angle);
+    calcPos(returnObj.start,angle,returnObj.swipe);
 }
 
 IW.RadialCarousel.prototype.rotateByRelativeAngle = function(xPos,yPos) {
@@ -285,29 +343,34 @@ $(document).mouseup(function() {
 
 
 //ignore this for now.
+var carouselTest;
 $(document).ready(function () {
-    // IW.currentWinWidth = $(window).width();
-    // IW.currentWinHeight = $(window).height();
+    IW.currentWinWidth = $(window).width();
+    IW.currentWinHeight = $(window).height();
     // //make a carousel
     // IW.carousel = container = $(".web-region ul");
     // var test = container.children();
     // var itemCount = test.length;
-    // var radius = ((IW.currentWinWidth - 200) / 2);
-    // var centerX = IW.currentWinWidth / 2;
-    // var centerY = IW.currentWinHeight / 2;
-    // var thisCenter = {x:centerX, y:centerY};
+    var radius = ((IW.currentWinWidth - 200) / 2);
+    var centerX = IW.currentWinWidth / 2;
+    var centerY = IW.currentWinHeight / 2;
+    var thisCenter = {x:centerX, y:centerY};
     // var itemWidth = $(".web-region ul li").width();
 
-    // if (IW.currentWinWidth > 720) {
-    //     IW.currentWinWidth = 720;
-    // } else {
-    //     IW.currentWinWidth = IW.currentWinWidth - 200;
-    // }
+    if (IW.currentWinWidth > 720) {
+        IW.currentWinWidth = 720;
+    } else {
+        IW.currentWinWidth = IW.currentWinWidth - 200;
+    }
 
-    // $(".web-region").css({
-    //     width: IW.currentWinWidth,
-    //     height: radius / 2
-    // });
+    $(".web-region").css({
+        width: IW.currentWinWidth,
+        height: radius / 2
+    });
+    var jQObject = $(".web-region ul");
+
+    carouselTest = new IW.RadialCarousel(thisCenter,radius,jQObject);
+
 
     // IW.setRotation(720); //0 should be the 12 oclock position here.
     
