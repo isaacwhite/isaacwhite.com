@@ -286,8 +286,6 @@ a:hover {
     width: 12rem;
     background-color: white;
     color: black;
-    transform-origin: top left;
-    -webkit-transform-origin: top left;
     border-radius: 2px;
     padding: 1rem;
     border: 1px solid #d7d7d7; }
