@@ -95,7 +95,7 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
         var childCount = that.children.length;
         var angleRange = (360/(that.itemCount * 2));
         adjAngle = 360 - adjAngle;
-        var startIndex = (childCount - Math.round(adjAngle / angleRange)) % childCount;
+        var startIndex = Math.abs(childCount - Math.round(adjAngle / angleRange)) % childCount;
 
         //the element that is closest to center is startIndex
         returnObj.swipe = angleRange;
