@@ -44,7 +44,9 @@ IW.RadialCarousel = function(center,radius,jQDomContainer) {
     //expecting a jQuery object for jQuery methods.
     this.domElement = jQDomContainer;
     this.children = [];
-    this.zIndexMap = [];
+    this.valueMap = {};
+    this.valueMap.zIndex = [];
+    this.valueMap.angAnc = [];
     var domChildren = jQDomContainer.children();
     var zIndexMax = Math.ceil(domChildren.length / 2);
     //just check that it's not even, or we could have problems.
@@ -53,9 +55,12 @@ IW.RadialCarousel = function(center,radius,jQDomContainer) {
     }
     var decrease = true;
     var thisZIndex = zIndexMax;
-    //loop to make out zIndexMap and our slide objects
+    var angStart = 100;
+    var swipe = 180 / domChildren.length;
+    //loop to make out valueMap and our slide objects
     for (var i = 0; i < domChildren.length; i++) {
-        this.zIndexMap.push(thisZIndex);
+        this.valueMap.zIndex.push(thisZIndex);
+        this.valueMap.angAnc.push(angStart);
         this.children.push(new IW.RChild(domChildren[i],i,this));
         if (decrease) {
             thisZIndex--;
@@ -66,6 +71,8 @@ IW.RadialCarousel = function(center,radius,jQDomContainer) {
             thisZIndex = 1;//start from 1 again.
             decrease = false;
         }
+        angStart += swipe;
+        angStart = angStart % 180;
      }
      this.itemCount = this.children.length;
     //initialize the list of children.
@@ -77,8 +84,11 @@ IW.RadialCarousel = function(center,radius,jQDomContainer) {
  * @return Nothing, sets rotation on carousel.
  */
  //this is a monster of a function
+//all right, suck it up and redo this logic.
 IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
+
     var that = this; //let's allow the inner functions to see "this"
+    //NOT CHANGING
     //prevents values that are not 0 <= x < 360
     var limitAngle = function(rawAngle) {
         var angle = rawAngle % 360;
@@ -89,37 +99,36 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
             angle = angle % 180;
         return angle;
     }
+    //THIS CHANGES, we'll calculate static angles too.
     //only positive numbers reach this. -10 becomes 170, and so on.
-    var calculateOrder = function(adjAngle) {
+    var calcFirst = function(adjAngle) {
         var returnObj = {};
         var childCount = that.children.length;
-        var angleRange = (360/(that.itemCount * 2));
-        adjAngle = 360 - adjAngle;
-        var startIndex = Math.abs(childCount - Math.round(adjAngle / angleRange)) % childCount;
-
-        //the element that is closest to center is startIndex
+        adjAngle = (adjAngle + 10) % ( 360 / 2 );
+        var angleRange = (360 / (childCount * 2));
+        var offset = -(adjAngle % angleRange);
+        var startIndex = Math.floor(adjAngle / angleRange);
         returnObj.swipe = angleRange;
         returnObj.start = startIndex;
+        returnObj.offset = offset;
+
         return returnObj;
     }
     var getRotationInfo = function(angle) {
         var rotAngle, //rotation value in degrees to align with circumference
             radAngle, //angle as radians
-            trigAngle, //deg angle compatible with standard trig calcs
             xCenter, //x center of carousel
             yCenter, //y center of carousel
             radius, //radius of carousel
             xVal, //calculated x position for current angle on circumference
             yVal, //calculated y position for current angle on circumference
-            results; //returnable results.
-        if (angle <= 90) {
-            trigAngle = 90 - angle;
-            rotAngle = angle;
-        } else {  //it must be bigger
-            trigAngle = 90 + (180 - angle);
-            rotAngle = -(180 - angle)
-        }
-        radAngle = (trigAngle * Math.PI) / 180;
+            results; //returnable results.\
+            
+            //no condition checking :)
+            rotAngle = 90 - angle;
+            //trig angle is unnecessary
+        
+        radAngle = (angle * Math.PI) / 180;
         radius = that.radius;
         //these are unused?
         xCenter = that.center.x;
@@ -135,25 +144,18 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
         return results;
     }
     //calculates positioning and sets them on all children
-    var calcPos = function(startIndex,adjAngle,swipe) {
-        //logic problem, offset is 0 at 0, when we need a way to keep first active element in focus while it is behind some.
-        var offset = adjAngle % swipe;
+    var calcPos = function(startIndex,swipe,offset) {
         //at 0, offset is 0
         //at any angle that's a multiple of swipe, it's also 0.
         //at any angle where offset is less than 10
-        console.log(offset);
-        var currentAngle = adjAngle;
-        var rotationInfo, //return value for a current rotation
-            cssValues,
-            domElement, //transform objects for child.
-            currentWidthAdj; //with of current item
         currentElement = startIndex;
         for (var i = 0; i< that.children.length; i++) {
-            currentZIndex = that.zIndexMap[i];
-
+            currentZIndex = that.valueMap.zIndex[i];
+            currentAnchorAngle = that.valueMap.angAnc[i];
             //we always start from the middle
             //there is a bug here. Inconsistency between determining active element and roation angle!
-            rotationInfo = getRotationInfo(offset + (i * swipe));
+           //check rotation info, it should now expect a trig angle
+            rotationInfo = getRotationInfo(currentAnchorAngle + offset);
             domElement = that.children[currentElement].domElement;
             currentWidthAdj = (($(domElement).width()/2) + 16);
 
@@ -168,16 +170,14 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
             }
             that.children[currentElement].setPositioning(cssValues,i);
             //at the end of the loop, move to next element
-            currentAngle = currentAngle + swipe;//increment by swipe value each time
-            currentAngle = currentAngle % 180;
             currentElement = (currentElement + 1) % that.children.length;
         }
         //currentElement should now be equal to startIndex again.
         //we'll use offset to calculate all other rotations.
     } 
     var angle = limitAngle(inputDegAngle);
-    var returnObj = calculateOrder(angle);
-    calcPos(returnObj.start,angle,returnObj.swipe);
+    var returnObj = calcFirst(angle);
+    calcPos(returnObj.start,returnObj.swipe,returnObj.offset);
 }
 /**CURRENTLY UNUSED**/
     IW.RadialCarousel.prototype.rotateByRelativeAngle = function(xPos,yPos) {
