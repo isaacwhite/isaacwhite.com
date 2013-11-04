@@ -89,12 +89,14 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
             angle = angle % 180;
         return angle;
     }
+    //only positive numbers reach this. -10 becomes 170, and so on.
     var calculateOrder = function(adjAngle) {
         var returnObj = {};
         var childCount = that.children.length;
         var angleRange = (360/(that.itemCount * 2));
-        var startIndex = ((Math.round(adjAngle / angleRange)) % childCount);
-        // console.log(startIndex);
+        adjAngle = 360 - adjAngle;
+        var startIndex = (childCount - Math.round(adjAngle / angleRange)) % childCount;
+
         //the element that is closest to center is startIndex
         returnObj.swipe = angleRange;
         returnObj.start = startIndex;
@@ -139,12 +141,6 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
         //at 0, offset is 0
         //at any angle that's a multiple of swipe, it's also 0.
         //at any angle where offset is less than 10
-        /*if (adjAngle >= 170) { //this only protects against the first element.
-            offset = offset - swipe;
-        }*/
-        // if (offset > 10) {
-        //     offset = 10- offset;
-        // } 
         console.log(offset);
         var currentAngle = adjAngle;
         var rotationInfo, //return value for a current rotation
@@ -171,7 +167,6 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
                 "yTrans" : 0
             }
             that.children[currentElement].setPositioning(cssValues,i);
-            //we have to do something with this now.
             //at the end of the loop, move to next element
             currentAngle = currentAngle + swipe;//increment by swipe value each time
             currentAngle = currentAngle % 180;
