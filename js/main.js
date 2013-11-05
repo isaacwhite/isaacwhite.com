@@ -37,7 +37,6 @@ IW.RChild.prototype.setPositioning = function(transformObject,position) {
         "-webkit-transform": transformString
     });
 }
-
 IW.RadialCarousel = function(center,radius,jQDomContainer) {
     this.center = center;
     this.radius = radius;
@@ -72,8 +71,11 @@ IW.RadialCarousel = function(center,radius,jQDomContainer) {
             decrease = false;
         }
         angStart += swipe;
-        angStart = angStart % 180;
+        if (angStart != 180) {
+            angStart = angStart % 180;
+        }
      }
+     // console.log(this.valueMap);
      this.itemCount = this.children.length;
     //initialize the list of children.
     this.setAngle(0); //initialize with 0 initial angle
@@ -181,18 +183,19 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
 }
 /**CURRENTLY UNUSED**/
     IW.RadialCarousel.prototype.rotateByRelativeAngle = function(xPos,yPos) {
+        var that = this;
         var getQuadrant = function (xPos,yPos) {
             var quad = -1;
-            if (xPos >= this.center.x) {
+            if (xPos >= that.center.x) {
                 //quadrants 1 or 2
-                if (yPos >= this.center.y) {
+                if (yPos >= that.center.y) {
                     quad = 2;
                 } else {
                     quad = 1;
                 }
             } else {
                 //quadrants 3 or 4
-                if (yPos >= this.center.y) {
+                if (yPos >= that.center.y) {
                     quad = 3;
                 } else {
                     quad = 4;
@@ -202,8 +205,8 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
             return quad;
         }
         var calculateTanAngle = function (xPos,yPos) {
-            var deltaX = xPos - this.center.x;
-            var deltaY = yPos - this.center.y;
+            var deltaX = xPos - that.center.x;
+            var deltaY = yPos - that.center.y;
             var rawAngle = Math.atan(deltaY/deltaX) * (180/Math.PI);
 
             return rawAngle;
@@ -218,7 +221,7 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
             return adjAngle;
         }
 
-        var rawAngle = calculateTanAngle(xPos,yPos,yCenter);
+        var rawAngle = calculateTanAngle(xPos,yPos);
         var quad = getQuadrant(xPos,yPos);
         var adjAngle = adjTanAngle(rawAngle,quad);
 
@@ -291,25 +294,25 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
     //1. Turn on dragging / mousemove
     //2. Initiate a function to rotate the slider by angle of mouse
     $(".web-region ul li").mousedown(function() {
-        // $(document).mousemove( function (e){
-        //     //only execute after first mousemove
-        //     if (!IW.dragging) {
-        //         IW.dragging = true;
-        //         //get our start position for displacement measurements
-        //         var xStart = e.pageX;
-        //         var yStart = e.pageY;
-        //         IW.dragStart = {x:xStart,y:yStart};
-        //     }
-        //     //now the normal checker
-        //     setTimeout(function() {
-        //         var xPos = e.pageX;
-        //         var yPos = e.pageY;
-        //         //this references the dragstart we've already set.
-        //         IW.animateWithMouse(xPos,yPos);
-        //         // $(".print-region h2").html(IW.carouselCenter.x + "," + 
-        //         //     IW.carouselCenter.y);
-        //     },17);
-        // });
+        $(document).mousemove( function (e){
+            //only execute after first mousemove
+            if (!IW.dragging) {
+                IW.dragging = true;
+                //get our start position for displacement measurements
+                var xStart = e.pageX;
+                var yStart = e.pageY;
+                IW.dragStart = {x:xStart,y:yStart};
+            }
+            //now the normal checker
+            setTimeout(function() {
+                var xPos = e.pageX;
+                var yPos = e.pageY;
+                //this references the dragstart we've already set.
+                carouselTest.rotateByRelativeAngle(xPos,yPos);
+                // $(".print-region h2").html(IW.carouselCenter.x + "," + 
+                //     IW.carouselCenter.y);
+            },17);
+        });
     });
 
 
