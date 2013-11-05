@@ -184,18 +184,22 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
 /**CURRENTLY UNUSED**/
     IW.RadialCarousel.prototype.rotateByRelativeAngle = function(xPos,yPos) {
         var that = this;
+        var container = that.domElement;
+        var containerPos = $(container).offset();
+        var xCenter = containerPos.left + that.center.x;
+        var yCenter = containerPos.top + that.center.y;
         var getQuadrant = function (xPos,yPos) {
             var quad = -1;
-            if (xPos >= that.center.x) {
+            if (xPos >= xCenter) {
                 //quadrants 1 or 2
-                if (yPos >= that.center.y) {
+                if (yPos >= yCenter) {
                     quad = 2;
                 } else {
                     quad = 1;
                 }
             } else {
                 //quadrants 3 or 4
-                if (yPos >= that.center.y) {
+                if (yPos >= yCenter) {
                     quad = 3;
                 } else {
                     quad = 4;
@@ -205,8 +209,8 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
             return quad;
         }
         var calculateTanAngle = function (xPos,yPos) {
-            var deltaX = xPos - that.center.x;
-            var deltaY = yPos - that.center.y;
+            var deltaX = xPos - xCenter;
+            var deltaY = yPos - yCenter;
             var rawAngle = Math.atan(deltaY/deltaX) * (180/Math.PI);
 
             return rawAngle;
@@ -224,6 +228,7 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
         var rawAngle = calculateTanAngle(xPos,yPos);
         var quad = getQuadrant(xPos,yPos);
         var adjAngle = adjTanAngle(rawAngle,quad);
+        console.log(adjAngle);
 
         this.setAngle(adjAngle);
 
@@ -361,7 +366,7 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
         var radius = ((IW.currentWinWidth - 200) / 2);
         console.log(radius);
 
-        $(".web-region").css({
+        $(".web-region ul").css({
             width: IW.currentWinWidth,
             height: radius / 2
         });
