@@ -46,6 +46,7 @@ IW.RadialCarousel = function(center,radius,jQDomContainer) {
     this.valueMap = {};
     this.valueMap.zIndex = [];
     this.valueMap.angAnc = [];
+    this.currentAngle = 0;
     var domChildren = jQDomContainer.children();
     var zIndexMax = Math.ceil(domChildren.length / 2);
     //just check that it's not even, or we could have problems.
@@ -75,9 +76,7 @@ IW.RadialCarousel = function(center,radius,jQDomContainer) {
             angStart = angStart % 180;
         }
      }
-     // console.log(this.valueMap);
      this.itemCount = this.children.length;
-    //initialize the list of children.
     this.setAngle(0); //initialize with 0 initial angle
 }
 /**
@@ -85,8 +84,6 @@ IW.RadialCarousel = function(center,radius,jQDomContainer) {
  * @param an angle in degrees. Positive or negative
  * @return Nothing, sets rotation on carousel.
  */
- //this is a monster of a function
-//all right, suck it up and redo this logic.
 IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
 
     var that = this; //let's allow the inner functions to see "this"
@@ -181,9 +178,14 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
     var returnObj = calcFirst(angle);
     calcPos(returnObj.start,returnObj.swipe,returnObj.offset);
 }
+
+IW.RadialCarousel.prototype.adjAngle = function(inputRelativeAngle) {
+
+}
 /**CURRENTLY UNUSED**/
     IW.RadialCarousel.prototype.rotateByRelativeAngle = function(xPos,yPos) {
         var that = this;
+        var radius = that.radius;
         var container = that.domElement;
         var containerPos = $(container).offset();
         var xCenter = containerPos.left + that.center.x;
@@ -229,6 +231,7 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
         var quad = getQuadrant(xPos,yPos);
         var adjAngle = adjTanAngle(rawAngle,quad);
         console.log(adjAngle);
+        console.log("x:" + xCenter + ", y:" + yCenter);
 
         this.setAngle(adjAngle);
 
@@ -342,30 +345,19 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
         }
     });
 
-
-
-    //ignore this for now.
     var carouselTest;
     $(document).ready(function () {
         IW.currentWinWidth = $(window).width();
         IW.currentWinHeight = $(window).height();
-        // //make a carousel
-        // IW.carousel = container = $(".web-region ul");
-        // var test = container.children();
-        // var itemCount = test.length;
         var centerX = IW.currentWinWidth / 2;
         var centerY = IW.currentWinHeight / 2;
         var thisCenter = {x:centerX, y:centerY};
-        // var itemWidth = $(".web-region ul li").width();
-
         if (IW.currentWinWidth > 720) {
             IW.currentWinWidth = 720;
         } else {
             IW.currentWinWidth = IW.currentWinWidth - 200;
         }
         var radius = ((IW.currentWinWidth - 200) / 2);
-        console.log(radius);
-
         $(".web-region ul").css({
             width: IW.currentWinWidth,
             height: radius / 2
