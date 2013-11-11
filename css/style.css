@@ -308,7 +308,7 @@ a:hover {
     padding: .5rem; }
     #portfolio .toggle-animation:hover {
       cursor: pointer; }
-  #portfolio .web-region {
+  #portfolio .web-region ul {
     display: block;
     margin: 0 auto;
     position: relative;
