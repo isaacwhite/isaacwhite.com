@@ -1,67 +1,56 @@
-var IW = {animating: false};
-IW.dragging;
+var IW = {}; //global object
 
-IW.RChild = function(domElement,queuePosition,parent) {
+//model for the children in the carousel
+IW.RChild = function (domElement,queuePosition,parent) {
+    //just copy and declare values, no calculation
     this.domElement = domElement;
     this.parent = parent;
     this.positionInQueue = queuePosition;
     this.css;
 }
-IW.RChild.prototype.setPositioning = function(transformObject,position) {
-    var xPos, 
-        yPos, 
-        rotation, 
-        xTranslate, 
-        yTranslate, 
-        zIndex, 
-        transformString,
-        domElement;
-    xPos = transformObject.x;
-    yPos = transformObject.y;
-    rotation = transformObject.rot;
-    xTranslate = transformObject.xTrans;
-    yTranslate = transformObject.yTrans;
-    zIndex = transformObject.zIndex;
-    transformString = "rotate(" + rotation + 
-                      "deg)" + "translate(-" + xTranslate + "px," + yTranslate +
-                      "px)";
+
+//function to set positions 
+IW.RChild.prototype.setPositioning = function (transformObject,position) {
+    var transformString; //to store the inline css adjustments as css transforms
+    
+    //just concatenante string and set values, no calculation
+    transformString = "rotate(" + transformObject.rot + "deg)" + 
+        "translate(-" + transformObject.xTrans + "px," + 
+        transformObject.yTrans + "px)";
     this.css = transformObject;
     this.positionInQueue = position;
-    domElement = this.domElement;
-    $(domElement).css({
-        "position" : "absolute",
-        "top"      : yPos,
-        "left"     : xPos,
-        "z-index"  : zIndex,
-        "-webkit-transform": transformString
+    $(this.domElement).css({
+        "position"          : "absolute",
+        "top"               : transformObject.y,
+        "left"              : transformObject.x,
+        "z-index"           : transformObject.zIndex,
+        "-webkit-transform" : transformString,
+        "transform"         : transformString
     });
 }
 
-//PROBLEM:
-//Center calculations only use the center of the window
-//Not the center of the carousel that calculates positioning.
-//Fix this by making the carousel set it's center to the x/y coordinates of the carousel center itself
-//since we're going to be position relative to the container, we'll need to figure out relative center coordinates.
-//eventually we're going to have overflow hidden, so we'll have to calculate the y center based on radius.
-IW.RadialCarousel = function(radius,jQDomContainer) {
+//a carousel object
+IW.RadialCarousel = function (radius,jQDomContainer) {
     var offset = $(jQDomContainer).offset();
-    this.center = {
-        x: offset.left + radius,
-        y: offset.top + radius
-        };
-    this.intCenter = {
-        x: $(jQDomContainer).width() / 2, //this is fine for width, but what about height!?
-        y: radius
-    }
-    //we should make sure we are drawing relative to the center of the container.
     this.radius = radius;
     this.domElement = jQDomContainer;
     this.children = [];
     this.valueMap = {};
     this.valueMap.zIndex = [];
     this.valueMap.angAnc = [];
-    this.currentAngle = 0;
-    this.liveAngle = 0;
+    this.currentStart = 0; //is this internal or external?
+    this.currentAngle = 0; //This should just be set to whatever value is passed to setAngle when isRotating is false.
+    this.liveAngle;//leave undefined.
+    this.center = {
+        x: offset.left + radius,
+        y: offset.top + radius
+    };
+    this.intCenter = {
+        x: $(jQDomContainer).width() / 2, //this is fine for width, but what about height!?
+        y: radius + 20
+    }
+    //we should make sure we are drawing relative to the center of the container.
+
     var domChildren = jQDomContainer.children();
     var zIndexMax = Math.ceil(domChildren.length / 2);
     //just check that it's not even, or we could have problems.
@@ -72,7 +61,7 @@ IW.RadialCarousel = function(radius,jQDomContainer) {
     var thisZIndex = zIndexMax;
     var angStart = 100;
     var swipe = 180 / domChildren.length;
-    //loop to make out valueMap and our slide objects
+    //loop to make our valueMap and our slide objects
     for (var i = 0; i < domChildren.length; i++) {
         this.valueMap.zIndex.push(thisZIndex);
         this.valueMap.angAnc.push(angStart);
@@ -91,18 +80,23 @@ IW.RadialCarousel = function(radius,jQDomContainer) {
             angStart = angStart % 180;
         }
      }
-     this.itemCount = this.children.length;
+    this.itemCount = this.children.length;
     this.setAngle(0); //initialize with 0 initial angle
 }
 /**
  * A function that controls the angle setting on the carousel
- * @param an angle in degrees. Positive or negative
+ * @param an angle in degrees. Positive or negative,
+ * based on -90 -> 90 coord system between 9 & 3 oclock
  * @return Nothing, sets rotation on carousel.
  */
-IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
+IW.RadialCarousel.prototype.setAngle = function (inputDegAngle,isRelative) {
+    //do a check on if we just started rotating and record the angle?
+    //if the check checks out, we actually shouldn't request an angle change.
+
     var that = this; //let's allow the inner functions to see "this"
+
     //prevents values that are not 0 <= x < 360
-    var limitAngle = function(rawAngle) {
+    function limitAngle(rawAngle) {
         var angle = rawAngle % 360;
             if (angle < 0) {
                 angle = angle + 360;
@@ -112,7 +106,7 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
         return angle;
     }
     //only positive numbers reach this. -10 becomes 170, and so on.
-    var calcFirst = function(adjAngle) {
+    function calcFirst(adjAngle) {
         var returnObj = {};
         var childCount = that.children.length;
         adjAngle = (adjAngle + 10) % ( 360 / 2 );
@@ -126,20 +120,16 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
         } 
         return returnObj;
     }
-    var getRotationInfo = function(angle) {
+    function getRotationInfo(angle) {
         var rotAngle, //rotation value in degrees to align with circumference
             radAngle, //angle as radians
-            xCenter, //x center of carousel
-            yCenter, //y center of carousel
-            radius, //radius of carousel
             xVal, //calculated x position for current angle on circumference
             yVal, //calculated y position for current angle on circumference
             results; //returnable results.
         rotAngle = 90 - angle;    
         radAngle = (angle * Math.PI) / 180;
-        radius = that.radius;
-        xVal = that.intCenter.x + (radius * Math.cos(radAngle));
-        yVal = that.intCenter.y - (radius * Math.sin(radAngle));
+        xVal = that.intCenter.x + (that.radius * Math.cos(radAngle));
+        yVal = that.intCenter.y - (that.radius * Math.sin(radAngle));
         results = {
             "x"   : xVal,
             "y"   : yVal,
@@ -148,20 +138,19 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
         return results;
     }
     //calculates positioning and sets them on all children
-    var calcPos = function(startIndex,swipe,offset) {
-        currentElement = startIndex;
+    function calcPos(startIndex,swipe,offset) {
+        var currentElement = startIndex;
         for (var i = 0; i< that.children.length; i++) {
-            currentZIndex = that.valueMap.zIndex[i];
-            currentAnchorAngle = that.valueMap.angAnc[i];
-            rotationInfo = getRotationInfo(currentAnchorAngle + offset);
-            domElement = that.children[currentElement].domElement;
-            currentWidthAdj = (($(domElement).width()/2) + 16);
-            cssValues = {
+            var currentZIndex = that.valueMap.zIndex[i];
+            var currentAnchorAngle = that.valueMap.angAnc[i];
+            var rotationInfo = getRotationInfo(currentAnchorAngle + offset);
+            var domElement = that.children[currentElement].domElement;
+            var currentWidthAdj = (($(domElement).width() / 2) + 16);
+            var cssValues = {
                 "x"      : rotationInfo.x,
                 "y"      : rotationInfo.y,
                 "rot"    : rotationInfo.rot,
                 "zIndex" : currentZIndex,
-                //for now let's hard code the translation
                 "xTrans" : currentWidthAdj,
                 "yTrans" : 0
             }
@@ -170,37 +159,84 @@ IW.RadialCarousel.prototype.setAngle = function(inputDegAngle) {
         }
     } 
 
+    //does this make sense??? Have to think about this more.
+    /*
+
+    Let's just think about this for a minute. 
+
+    When we are rotating the carousel when it's already been set, we click the mouse, drag, and are now passing in an angle into the carousel
+    If the first time we mousedown we can make a different observation (that we're now dragging)
+    we can stop interpreting the angle literally and can instead use this first angle as a starting point. 
+    This initial angle becomes 0 rotation, if we don't rotate at all from here, we shouldn't. Now we need coluto measure offset against this first point
+    We rotate the angle of the slider by adding this offset against the "current rotation".
+
+    To do this the primary requirement is: grabbing and saving the first requested angle.
+
+    We need a better way to record the current position. Maybe the final position should always be called on mouseup? On mousedown we are only going to rotate based on a relative angle.
+
+    When we start rotating, we'll change a variable
+    We also need a conversion function to go from -90 0 90 position system to regular 0 - 180 position system.
+    I think we already have one but it's in another function.
+    */
+
+    // if (that.isRotating) { //different behavior if we are dragging.
+    //     //we need to just determine where we are starting.
+    //     var tempOffset = that.currentAngle - that.offsetRotation;
+    //     inputDegAngle = inputDegAngle - tempOffset;
+    // } else {
+    //     that.currentAngle = angle;
+    // }
+
+    //this is not ok, messes up initialization.
     var angle = limitAngle(inputDegAngle);
-    var returnObj = calcFirst(angle);
-    calcPos(returnObj.start,returnObj.swipe,returnObj.offset);
-    this.liveAngle = angle;
-    console.log(this.liveAngle);
+
+    //probably rotate by relative angle should handle this crap.
+    // if (!that.relativeAngle) {
+    //     that.relativeAngle = angle;
+    //     that.currentAngle = that.liveAngle;
+    //     //we need to have the currentAngle set before we reach this point.
+    // } else {
+
+    //     if (that.isRotating !== false) {
+    //         //if we are rotating, let's actually reset our angle to something else
+    //         angle = limitAngle(that.currentAngle + (that.relativeAngle + angle));
+    //         console.log(angle);
+    //     } else {
+            that.liveAngle = angle; //we already did this at the end?
+            //how do we update this when we're done doing the first rotation?
+            var returnObj = calcFirst(angle);
+            calcPos(returnObj.start,returnObj.swipe,returnObj.offset);
+            that.liveAngle = angle;
+        // }
+    // }
 }
 
-IW.RadialCarousel.prototype.adjAngle = function(inputRelativeAngle) {
-    //get the last starting angle
-    //add the offset being fed in as current
-    //set the rotation.
-}
-/**CURRENTLY UNUSED**/
-    IW.RadialCarousel.prototype.rotateByRelativeAngle = function(xPos,yPos) {
+
+//should the carousel itself keep track of if it's being rotated? Or should it be stored somewhere else?
+//An elegant solution (I think) is to toggle a state on the carousel the first time it is being rotated that records its current position
+//then until the deactivation method is called (or a variable is changed, whatever), the setting of angles behaves differently.
+//then the code below could actually be perfect.
+
+    //a function to convert coordinates to relative angles for insert into setAngle function.
+    IW.RadialCarousel.prototype.convertCoordToAngle = function (xPos,yPos) {
         var that = this;
-        var radius = that.radius;
-        var container = that.domElement;
-        var containerPos = $(container).offset();
-        var xCenter = that.center.x;
-        var yCenter = that.center.y;
-        var getQuadrant = function (xPos,yPos) {
+        var rawAngle = calculateTanAngle(xPos,yPos);
+        var quad = getQuadrant(xPos,yPos);
+        var adjAngle = adjTanAngle(rawAngle,quad);
+
+        return adjAngle;
+
+        function getQuadrant(xPos,yPos) {
             var quad = -1;
-            if (xPos >= xCenter) {
+            if (xPos >= that.center.x) {
                 //quadrants 1 or 2
-                if (yPos >= yCenter) {
+                if (yPos >= that.center.y) {
                     quad = 2;
                 } else {
                     quad = 1;
                 }
             } else {
-                if (yPos >= yCenter) {
+                if (yPos >= that.center.y) {
                     quad = 3;
                 } else {
                     quad = 4;
@@ -208,13 +244,13 @@ IW.RadialCarousel.prototype.adjAngle = function(inputRelativeAngle) {
             }
             return quad;
         }
-        var calculateTanAngle = function (xPos,yPos) {
-            var deltaX = xPos - xCenter;
-            var deltaY = yPos - yCenter;
+        function calculateTanAngle(xPos,yPos) {
+            var deltaX = xPos - that.center.x;
+            var deltaY = yPos - that.center.y;
             var rawAngle = Math.atan(deltaY/deltaX) * (180/Math.PI);
             return rawAngle;
         }
-        var adjTanAngle = function (angle,quadrant) {
+        function adjTanAngle(angle,quadrant) {
             if (quadrant === 1 || quadrant === 2) {
                 adjAngle = 90 + rawAngle;
             } else {
@@ -222,13 +258,32 @@ IW.RadialCarousel.prototype.adjAngle = function(inputRelativeAngle) {
             }
             return adjAngle;
         }
-        var rawAngle = calculateTanAngle(xPos,yPos);
-        var quad = getQuadrant(xPos,yPos);
-        var adjAngle = adjTanAngle(rawAngle,quad);
-        console.log(adjAngle);
-        // console.log("x:" + xCenter + ", y:" + yCenter);
-        this.setAngle(adjAngle);
-        // this.adjAngle(adjAngle);
+    }
+
+    IW.RadialCarousel.prototype.rotateByRelativeAngle = function (xPos,yPos) {
+        var adjAngle, //the current angle
+            refAngle, //the last angle we stopped at
+            displacement, //drag start - current position
+            reqAngle;//angle to request for positioning
+        if (!this.currentStart) {
+            //record our drag start
+            this.currentStart = this.convertCoordToAngle(xPos,yPos);
+        }
+        var adjAngle = this.convertCoordToAngle(xPos,yPos);
+        var refAngle = this.lastReqAngle;
+        var displacement = adjAngle - this.currentStart;
+        var reqAngle = refAngle + displacement;
+        this.setAngle(reqAngle);
+    }
+
+    IW.RadialCarousel.prototype.startRotating = function () {
+        this.isRotating = true;
+        this.lastReqAngle = this.liveAngle;
+    }
+    IW.RadialCarousel.prototype.stopRotating = function () {
+        this.isRotating = false;
+        this.currentStart = null;
+        //do we really not need to do anything else here?
     }
 
 /**EVENT HANDLERS**/
@@ -251,7 +306,7 @@ IW.RadialCarousel.prototype.adjAngle = function(inputRelativeAngle) {
          }, false);
         
     });
-    $(".art").click(function(e) {
+    $(".art").click(function (e) {
         window.history.pushState(null,null,"/portfolio/art")
          e.preventDefault();
         $.get("/portfolio/ajax/art.html")
@@ -290,66 +345,43 @@ IW.RadialCarousel.prototype.adjAngle = function(inputRelativeAngle) {
          }, false);
     });
 
-    //here's a listener for mousedown on a list item. it needs to do two things:
-    //1. Turn on dragging / mousemove
-    //2. Initiate a function to rotate the slider by angle of mouse
-    $(".web-region ul li").mousedown(function() {
+    $(".web-region ul li").mousedown(function () {
         $(document).mousemove( function (e){
             //only execute after first mousemove
-            if (!IW.dragging) {
-                IW.dragging = true;
-                //get our start position for displacement measurements
-                var xStart = e.pageX;
-                var yStart = e.pageY;
-                IW.dragStart = {x:xStart,y:yStart};
+            if (!carouselTest.isRotating) {
+                carouselTest.startRotating();
+                console.log("Starting to rotate");
             }
-            //now the normal checker
-            setTimeout(function() {
+            setTimeout(function () {
                 var xPos = e.pageX;
                 var yPos = e.pageY;
                 //this references the dragstart we've already set.
                 carouselTest.rotateByRelativeAngle(xPos,yPos);
-                // $(".print-region h2").html(IW.carouselCenter.x + "," + 
-                //     IW.carouselCenter.y);
             },17);
         });
     });
-
-
     //here's a listener on mouseup. It needs to do two things:
     // 1. Turn off dragging / mousemove detection
     // 2. Record where we stopped.
-    $(document).mouseup(function() {
+    $(document).mouseup(function (e) {
         console.log("Mouseup!");
-        if (IW.dragging) {
+        if (carouselTest.isRotating) {
             $(document).off("mousemove");
-            IW.dragging = false;
-
-            //IW.degreeRotation must be set somewhere else.
-            IW.animationRotation = IW.degreeRotation;
-
-            //this correction should happen somewhere else.
-            //MAIN FUNCTION FOR ANGLE CORRECTION!!
-            if (IW.degreeRotation >= 360) {
-                IW.degreeRotation = IW.degreeRotation - 360;
-            }
-            console.log(IW.degreeRotation)
+            carouselTest.stopRotating();
+            //we don't need to pass a value here, though we could.
+            //rather, the offset should be reset, and transferred into the actual value for the angle.
         }
     });
 
     var carouselTest;
     $(document).ready(function () {
         IW.currentWinWidth = $(window).width();
-        IW.currentWinHeight = $(window).height();
-        var centerX = IW.currentWinWidth / 2;
-        var centerY = IW.currentWinHeight / 2;
-        var thisCenter = {x:centerX, y:centerY};
-        if (IW.currentWinWidth > 720) {
-            IW.currentWinWidth = 720;
+        if (IW.currentWinWidth > 960) {
+            IW.currentWinWidth = 960;
         } else {
             IW.currentWinWidth = IW.currentWinWidth - 200;
         }
-        var radius = ((IW.currentWinWidth - 200) / 2);
+        var radius = ((IW.currentWinWidth) / 2);
         $(".web-region ul").css({
             width: IW.currentWinWidth,
             height: radius / 2
