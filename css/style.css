@@ -386,6 +386,9 @@ footer p {
 #portfolio .view-page:hover h3 {
   color: black; }
 
+.view-page a {
+  display: block; }
+
 @media all and (min-width: 45em) {
   #under-construction .web-work {
     width: 49%; }
