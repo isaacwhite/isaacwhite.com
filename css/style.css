@@ -12,7 +12,6 @@ h1 {
   margin: 0;
   /*text-shadow: 0 1px 1px #FAE9D5;*/
   text-align: center;
-  margin-bottom: .25em;
   /*font-family: 'Junction', sans-serif;*/
   /*font-family: 'Open Sans', sans-serif;*/
   font-weight: normal;
@@ -242,20 +241,12 @@ a:hover {
 
 /**PORTFOLIO**/
 #portfolio {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   max-width: 80em;
   margin: 0 auto;
   text-align: center; }
   #portfolio h1 {
     font-size: 2em;
-    text-align: left;
-    border-bottom: 1px solid white;
-    margin-bottom: .25em; }
+    text-align: left; }
     @media all and (max-width: 30em) {
       #portfolio h1 {
         font-size: 1.5em; } }
@@ -264,8 +255,7 @@ a:hover {
     #portfolio a:hover {
       opacity: 1; }
     #portfolio a img {
-      width: 16%;
-      display: none; }
+      width: 16%; }
       @media all and (max-width: 70em) {
         #portfolio a img {
           width: 19%; } }
@@ -281,56 +271,6 @@ a:hover {
       display: inherit; }
   #portfolio .contain {
     display: inline; }
-  #portfolio li {
-    height: 10rem;
-    width: 12rem;
-    background-color: white;
-    color: black;
-    transform-origin: top left;
-    -webkit-transform-origin: top left;
-    border-radius: 2px;
-    padding: 1rem;
-    border: 1px solid #d7d7d7; }
-    #portfolio li:after {
-      content: ""; }
-    #portfolio li:hover {
-      cursor: -moz-grab;
-      cursor: -webkit-grab;
-      cursor: grab; }
-  #portfolio .toggle-animation {
-    display: block;
-    height: 2rem;
-    width: 7rem;
-    text-align: center;
-    line-height: 2rem;
-    margin: 0 auto;
-    background-color: white;
-    color: black;
-    border-radius: 2px;
-    padding: .5rem; }
-    #portfolio .toggle-animation:hover {
-      cursor: pointer; }
-  #portfolio .web-region {
-    display: block;
-    margin: 0 auto;
-    position: relative;
-    padding: 0; }
-  #portfolio .circle {
-    position: absolute;
-    left: 0;
-    top: 20px;
-    z-index: 2; }
-  #portfolio .square {
-    position: absolute;
-    left: 0;
-    top: 20px;
-    z-index: -2; }
-  #portfolio .under-the-hood {
-    text-align: left; }
-    #portfolio .under-the-hood .code-view {
-      white-space: pre; }
-    #portfolio .under-the-hood .operator {
-      color: red; }
 
 #fancybox-thumbs li:after {
   content: ''; }
@@ -338,5 +278,120 @@ a:hover {
 footer p {
   margin-bottom: .25em; }
 
-html {
-  height: 100%; }
+#under-construction {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  left: 0;
+  height: 100%;
+  z-index: 2;
+  text-align: center;
+  box-sizing: border-box; }
+
+#under-construction .background {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  opacity: .8;
+  left: 0;
+  top: 0;
+  z-index: -1; }
+
+#under-construction p {
+  max-width: 30rem;
+  display: block;
+  line-height: 1.6;
+  margin: 0 auto;
+  text-align: left; }
+
+#under-construction .web-work {
+  float: left;
+  padding: 0 1rem 1rem;
+  background-color: white;
+  color: black;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  opacity: 1;
+  min-height: 12rem;
+  border-radius: 0.125rem; }
+
+#under-construction .web-work p {
+  max-width: 90%; }
+
+#under-construction .content-contain > p {
+  margin-bottom: 4rem; }
+
+#portfolio {
+  overflow: hidden; }
+
+#under-construction h4 {
+  font-size: 1.125rem; }
+
+#under-construction h2 {
+  font-size: 2.5rem; }
+
+#under-construction .view-page {
+  display: block;
+  clear: both;
+  padding-top: 1rem; }
+
+#under-construction .view-page h3 {
+  font-style: normal;
+  background-color: black;
+  width: 60%;
+  padding: 1rem;
+  border-radius: 0.125rem;
+  border: 1px solid #d7d7d7;
+  transition: all .25s; }
+
+#under-construction .view-page h3:hover {
+  cursor: pointer;
+  background-color: white;
+  color: black; }
+
+#under-construction a {
+  border-bottom: 1px dotted black;
+  padding: 0.125rem;
+  color: black;
+  line-height: 1.5; }
+
+#under-construction a:hover {
+  padding: 0.125rem 1rem;
+  border-radius: 0.125rem;
+  color: white;
+  background-color: black;
+  transition: all .25s; }
+
+#under-construction .content-contain {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 0 1rem; }
+
+#portfolio .view-page {
+  margin-bottom: .5rem;
+  border-bottom: 1px solid white;
+  padding-bottom: .5rem;
+  padding-top: .5rem;
+  border-top: 1px solid white;
+  transition: all .5s; }
+
+#portfolio .view-page h3 {
+  width: 100%; }
+
+#portfolio .view-page:hover {
+  background-color: white;
+  cursor: pointer; }
+
+#portfolio .view-page:hover h3 {
+  color: black; }
+
+@media all and (min-width: 45em) {
+  #under-construction .web-work {
+    width: 49%; }
+
+  #under-construction .web-work:nth-child(odd) {
+    clear: both; }
+
+  #under-construction .web-work:nth-child(even) {
+    margin-left: 2%; } }

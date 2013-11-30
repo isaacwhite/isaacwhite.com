@@ -9,11 +9,20 @@
         <title>Portfolio | Isaac White</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
-
+        <link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
         <link rel="stylesheet" href="../css/normalize.min.css">
         <link rel="stylesheet" href="../css/style.css">
-        <link rel="stylesheet" href="../css/vendor/sunburst.css">
         <script src="../js/vendor/modernizr-2.6.2.min.js"></script>
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-42818501-1', 'isaacwhite.com');
+          ga('send', 'pageview');
+
+        </script>
         <link rel="stylesheet" href="../js/fancybox/source/jquery.fancybox.css?v=2.1.4" type="text/css" media="screen" />
         
 
@@ -23,61 +32,96 @@
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
+        <div id="under-construction">
+            <div class="background"></div>
+            <div class="content-contain">
+                <h2>Hi there!</h2>
+                <p>Welcome to my portfolio section! This page is currently undergoing changes to showcase more web projects I've been working on recently. In the meantime, check out some of these:</p>
+                <div class="web-work">
+                    <h4><a href="http://www.columbiaspectator.com">ColumbiaSpectator.com</a></h4>
+                    <p>Responsive redesign of website for student newspaper built on Drupal 7. Launched April 2013.</p>
+                </div>
+                 <div class="web-work">
+                    <h4><a href="/portfolio/spellchecker/">JS Spellcheck</a></h4>
+                    <p>JavaScript spellchecker written for The New Yorker using a bloom filter dictionary precompiled in Node.js.</p>
+                </div>
+                 <div class="web-work">
+                    <h4><a href="http://www.columbiaspectator.com/2013/10/03/red-hook">Neighborhood Watch</a></h4>
+                    <p>Interactive map built around custom Drupal 7 content type for presenting A&amp;E feature online.</p>
+                </div>
+                <div class="web-work">
+                    <h4><a href="/portfolio/hackday">Under Construction: Fight the Food Coma</a></h4>
+                    <p>Interactive map based on Mayor Michael Bloomberg's <em>Pouring on the Pounds</em> campaign built with Karen Nan for NYT HackDay 2013. Uses NYT Events API, FoodEssentials API, and Google Maps API.</p>
+                </div>
+                <div class="web-work">
+                    <h4><a href="/portfolio/twitter-search">Twitter Search</a></h4>
+                    <p>Basic Twitter API search built for my UI class this semester (CS 4170).</p>
+                </div>
+                <div class="web-work">
+                    <h4><a href="/portfolio/gesture-video">Under Construction: Video Gesture</a></h4>
+                    <p>Gesture-based video player built for my UI class this semester (CS 4170).</p>
+                </div>
+                <div class="web-work">
+                    <h4><a href="http://www.columbiaspectator.com/2013/11/08/taking-off">Columbia Spectator: Special Issues</a></h4>
+                    <p>A Drupal 7 content type template for presenting Special Issue content online. Designed to be used with Timeline feature.</p>
+                </div>
+                <div class="web-work">
+                    <h4><a href="http://www.columbiaspectator.com/2013/11/07/womens-basketball-2013-ivy-season-recap">Columbia Spectator: Timeline</a></h4>
+                    <p>Reusable Drupal 7 content type for presenting timelines in responsive, web friendly format.</p>
+                </div>
+                <div class="web-work">
+                    <h4><a href="http://www.columbiaspectator.com/2013/11/13/give-or-not-give">Columbia Spectator: The Canon</a></h4>
+                    <p>Online format for Opinion feature build on Drupal 7 custom content type.</p>
+                </div>
+                <div class="web-work">
+                    <h4>Coming soon: SpecCharts</h4>
+                    <p>Responsive basic charts templated in Drupal 7 and rendered using Raphael.js.</p>
+                </div>
+                <div class="view-page"><h3>View the old portfolio page</h3></div>
+            </div>
+        </div>
         <div id="portfolio">
             <h1><a href="/">ISAAC WHITE</a> / PORTFOLIO</h1>
-
-            <div class="web-region">
-                <a class="web" href="/portfolio/web"><h2>Web</h2>
-                    <img src="webThumb.jpg"/>
-                </a>
-                <ul>
-                    <li>IsaacWhite.com</li>
-                    <li>ColumbiaSpectator.com</li>
-                    <li>The Canon</li>
-                    <li>Spec Timeline</li>
-                    <li>Special Issues</li>
-                    <li>Spec Map</li>
-                    <li>JsSpell</li>
-                    <li>Twitter Search</li>
-                    <li>Admissions</li>
-                </ul>
-            </div>
-            <div class="print-region">
-                <a class="print" href="/portfolio/print"><h2>Print</h2>
-                    <img src="something.jpg"/>
-                </a>
-                <div class="under-the-hood">
-                <a class="see-code" href="/js/main.js"><h2>Like the slider? Check out the code.</h2></a>
-                 <code id="javascript-view" class="code-view prettyprint"></code>
-                </div>
-                
-            </div>
-            <div class="art-region">
-                <a class="art" href="/portfolio/art">
-                    <h2>Artwork</h2>
-                    <h3>Test area</h3>
-                    <img class="section-thumb" src="something.jpg">
-                </a>
-                <div id="art" class="contain">
-                    <a class="fancybox first" rel="art" href="../images/full/paperclip.jpg"><img src="../images/thumb/paperclip.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art1.jpg"><img src="../images/thumb/art1.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art2.jpg"><img src="../images/thumb/art2.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art3.jpg"><img src="../images/thumb/art3.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art4.jpg"><img src="../images/thumb/art4.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art5.jpg"><img src="../images/thumb/art5.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art6.jpg"><img src="../images/thumb/art6.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art7.jpg"><img src="../images/thumb/art7.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art8.jpg"><img src="../images/thumb/art8.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art9.jpg"><img src="../images/thumb/art9.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art10.jpg"><img src="../images/thumb/art10.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art11.jpg"><img src="../images/thumb/art11.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art12.jpg"><img src="../images/thumb/art12.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art13.jpg"><img src="../images/thumb/art13.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art14.jpg"><img src="../images/thumb/art14.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art15.jpg"><img src="../images/thumb/art15.jpg" alt="" /></a>
-                    <a class="fancybox" rel="art" href="../images/full/art16.jpg"><img src="../images/thumb/art16.jpg" alt="" /></a>
-                </div>
-            </div>
+            <a class="fancybox" rel="sport" href="../images/full/football.jpg"><img src="../images/thumb/football.jpg" alt="" /></a>
+            <a class="fancybox" rel="sport" href="../images/full/football-spread.jpg"><img src="../images/thumb/football-spread.jpg" alt="" /></a>
+            <a class="fancybox" rel="sport" href="../images/full/basketball.jpg"><img src="../images/thumb/basketball.jpg" alt="" /></a>
+            <a class="fancybox" rel="sport" href="../images/full/basketball-spread.jpg"><img src="../images/thumb/basketball-spread.jpg" alt="" /></a>
+            <a class="fancybox" rel="special" href="../images/full/commencement.jpg"><img src="../images/thumb/commencement.jpg" alt="" /></a>
+            <a class="fancybox" rel="special" href="../images/full/coed.jpg"><img src="../images/thumb/coed.jpg" alt="" /></a>
+            <a class="fancybox" rel="daily" href="../images/full/daily.jpg"><img src="../images/thumb/daily.jpg" alt="" /></a>
+             <a class="fancybox" rel="sport" href="../images/full/baseball.jpg"><img src="../images/thumb/baseball.jpg" alt="" /></a>
+            <a class="fancybox" rel="weekend" href="../images/full/weekend1.jpg"><img src="../images/thumb/weekend1.jpg" alt="" /></a>
+            <a class="fancybox" rel="weekend" href="../images/full/weekend2.jpg"><img src="../images/thumb/weekend2.jpg" alt="" /></a>
+            <a class="fancybox" rel="weekend" href="../images/full/weekend3.jpg"><img src="../images/thumb/weekend3.jpg" alt="" /></a>
+            <a class="fancybox" rel="weekend" href="../images/full/weekend4.jpg"><img src="../images/thumb/weekend4.jpg" alt="" /></a>
+            <a class="fancybox" rel="weekend" href="../images/full/weekend5.jpg"><img src="../images/thumb/weekend5.jpg" alt="" /></a>
+            <a class="fancybox" rel="weekend" href="../images/full/weekend6.jpg"><img src="../images/thumb/weekend6.jpg" alt="" /></a>
+            <a class="fancybox" rel="weekend" href="../images/full/weekend7.jpg"><img src="../images/thumb/weekend7.jpg" alt="" /></a>
+            <a class="fancybox" rel="weekend" href="../images/full/weekend8.jpg"><img src="../images/thumb/weekend8.jpg" alt="" /></a>
+            <a class="fancybox" rel="weekend" href="../images/full/weekend9.jpg"><img src="../images/thumb/weekend9.jpg" alt="" /></a>
+            <a class="fancybox" rel="weekend" href="../images/full/weekend10.jpg"><img src="../images/thumb/weekend10.jpg" alt="" /></a>
+            <a class="fancybox" rel="sport" href="../images/full/basketball-front.jpg"><img src="../images/thumb/basketball-front.jpg" alt="" /></a>
+            <a class="fancybox" rel="daily" href="../images/full/daily2.jpg"><img src="../images/thumb/daily2.jpg" alt="" /></a>
+            <a class="fancybox" rel="special" href="../images/full/escape.jpg"><img src="../images/thumb/escape.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/paperclip.jpg"><img src="../images/thumb/paperclip.jpg" alt="" /></a>
+            <a class="fancybox" rel="special" href="../images/full/shaft.jpg"><img src="../images/thumb/shaft.jpg" alt="" /></a>
+            <a class="fancybox" rel="special" href="../images/full/yir.jpg"><img src="../images/thumb/yir.jpg" alt="" /></a>           
+            <a class="fancybox" rel="art" href="../images/full/art1.jpg"><img src="../images/thumb/art1.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art2.jpg"><img src="../images/thumb/art2.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art3.jpg"><img src="../images/thumb/art3.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art4.jpg"><img src="../images/thumb/art4.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art5.jpg"><img src="../images/thumb/art5.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art6.jpg"><img src="../images/thumb/art6.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art7.jpg"><img src="../images/thumb/art7.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art8.jpg"><img src="../images/thumb/art8.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art9.jpg"><img src="../images/thumb/art9.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art10.jpg"><img src="../images/thumb/art10.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art11.jpg"><img src="../images/thumb/art11.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art12.jpg"><img src="../images/thumb/art12.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art13.jpg"><img src="../images/thumb/art13.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art14.jpg"><img src="../images/thumb/art14.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art15.jpg"><img src="../images/thumb/art15.jpg" alt="" /></a>
+            <a class="fancybox" rel="art" href="../images/full/art16.jpg"><img src="../images/thumb/art16.jpg" alt="" /></a>
         <footer>
             <p>Designed and built by <a href="mailto:iaw2105@columbia.edu">Isaac White.</a></p>
         </footer>
@@ -107,7 +151,7 @@
                 });
             });
         </script>
-        <script src="../js/vendor/prettify.js"></script>
+
         <script src="../js/main.js"></script>
     </body>
 </html>
