@@ -334,7 +334,8 @@ footer p {
 #under-construction .view-page {
   display: block;
   clear: both;
-  padding-top: 1rem; }
+  padding-top: 1rem;
+  margin-bottom: 2rem; }
 
 #under-construction .view-page h3 {
   font-style: normal;
