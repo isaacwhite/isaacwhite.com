@@ -1,0 +1,120 @@
+@import url("reset.css");
+@import url("typography.css");
+
+html {
+	font-size: 16pt;
+}
+
+body#danville {
+	font: 1em/1.25em "Caslon", sans-serif;
+	max-width: 25em;
+	margin: 0 auto;
+	padding: 2em 1em;
+}
+
+#overlay { /* adds an invisible non-editable layer over content */
+	position: fixed;
+	width: 100%;
+	height: 100%;
+}
+
+#content {
+	width: 100%;
+}
+
+/* ===== ELEMENTS ===== */
+
+#elements {
+	display: none;
+}
+
+img {
+	display: block;
+	width: 100%;
+}
+
+.spot img {
+	width: 50%;
+	margin: auto;
+}
+
+.caption {
+	font-style: italic;
+	margin-top: .75em;
+}
+
+.cartoon .caption {
+	text-align: center;
+}
+
+.credit {
+	font: .875em/1.25em "NeutraDemi";
+	font-family: "NeutraDemi", sans-serif;
+	text-transform: uppercase;
+	margin-top: 1.25em;
+}
+
+#content .element {
+	margin: 2.5em 0;
+}
+
+/* ===== OPENER ===== */
+
+#opener {
+	text-align: center;
+}
+
+#opener h1 {
+	font: 2em/1em "Irvin";
+}
+
+#opener h2 {
+	font: .875em/1.25em "Neutra";
+	font-family: "Neutra", sans-serif;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+#opener h1, #opener h2, #opener h3, #opener h4 {
+	margin-bottom: 1rem;
+}
+
+/* ===== ARTICLE CONTENT ===== */
+
+p {
+	text-indent: 1.25em;
+}
+
+b, strong {
+	font-weight: bold;
+}
+
+em, i {
+	font-style: italic;
+}
+
+p.descender, p.no-indent, p.caption, p.credit {
+	text-indent: 0;
+	text-align: left;
+}
+
+p.descender {
+	margin-top: 2.5em;
+}
+
+p.descender:first-letter {
+	float: left;
+	font-size: 3em;
+	line-height: 2.5rem;
+	margin: 0;
+	padding: 0;
+}
+
+small, .small-caps {
+	font-size: .75em;
+}
+
+/* ===== ARTICLE CONTENT ===== */
+span.underline {
+	border-bottom: 2px red dotted;
+}
