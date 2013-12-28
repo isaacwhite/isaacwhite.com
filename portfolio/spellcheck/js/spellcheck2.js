@@ -52,6 +52,31 @@ BloomDictionary.addHashes = function(someWord) {
 		dictionary[index] = 1;
 	}
 }
+
+BloomDictionary.extractArray = function(compressedString) {
+	var compressedArray = compressedString.split("");
+	var compressConversion = [];
+	for(i=0; i< compressedArray.length; i++) {
+		var ones,twos,fours,eights,sixteens,thirtytwos,character,value,temp;
+		character = compressedArray[i];
+		value = character.charCodeAt() - 33;
+		temp = value;
+		thirtytwos = Math.floor(value/32);
+		temp -= thirtytwos * 32;
+		sixteens = Math.floor(temp/16);
+		temp -= sixteens * 16;
+		eights = Math.floor(temp/8);
+		temp -= eights * 8;
+		fours = Math.floor(temp/4);
+		temp -= fours * 4;
+		twos = Math.floor(temp/2);
+		temp -= twos * 2;
+		ones = temp;
+		compressConversion.push(ones,twos,fours,eights,sixteens,thirtytwos);
+	}
+
+	return compressConversion;
+}
 //takes any word split by spaces
 BloomDictionary.checkSpelling = function(someWord) {
 	var currentIndex;
