@@ -5,16 +5,6 @@ $hour = intval(date("H"));
 $todayString = date("m/d/y");
 $file = 'useCount.txt';
 $zipCode = 10027;
-<<<<<<< HEAD
-
-//actual api lookup
-// $forcastLookup = "http://api.wunderground.com/api/ae1ee363833e1943/forecast/q/";
-// $conditionsLookup = "http://api.wunderground.com/api/ae1ee363833e1943/geolookup/conditions/q/"
-
-//some saved responses for testing
-$forcastLookup = "10027_forcast";
-$conditionsLookup = "10027_conditions";
-=======
 $apiKey = "ae1ee363833e1943";
 
 function getWeatherElements($iconCode,$isDay) {
@@ -76,7 +66,6 @@ function applyColor($temperature) {
 //some saved responses for testing
 // $forecastLookup = "forecast_";
 // $conditionsLookup = "conditions_";
->>>>>>> 638a249faf91dd8561e307588ebd35680d5b3365
 
 
 // Open the file to get previous page info
@@ -119,15 +108,6 @@ $newUseString .= $today . "," . $queryCount;
 // Write the contents back to the file
 file_put_contents($file, $newUseString);
 
-<<<<<<< HEAD
-$jsonForcast = file_get_contents($forcastLookup . $zipCode . ".json");
-$jsonConditions = file_get_contents($conditionsLookup . $zipCode . ".json");
-$parsedForcast = json_decode($jsonForcast);
-$parsedConditions = json_decode($jsonConditions); 
-/*$location = $parsed_json->{'location'}->{'city'};
-$temp_f = $parsed_json->{'current_observation'}->{'temp_f'};
-$currentHigh = $parse_json->*/
-=======
 $jsonForecast = file_get_contents($forecastLookup . $zipCode . ".json");
 $jsonConditions = file_get_contents($conditionsLookup . $zipCode . ".json");
 $jsonAstronomy = file_get_contents($astronomyLookup . $zipCode . ".json");
@@ -190,7 +170,6 @@ foreach($simpleForecasts as $period) {
     }
 }
 
->>>>>>> 638a249faf91dd8561e307588ebd35680d5b3365
 ?>
 
 
@@ -267,6 +246,7 @@ foreach($simpleForecasts as $period) {
             ul {
                 padding: 0;
                 margin: 0;
+                position: relative;
             }
             li:after {
                 content: "";
@@ -363,15 +343,10 @@ foreach($simpleForecasts as $period) {
         // var date = "Date: " + <?php print $todayString; ?>;
         // var fileOut = "File output: \"" + <?php print $newUseString; ?> + "\"";
         var queryCount = "Daily Query Count: " + <?php print $queryCount; ?> ;
-<<<<<<< HEAD
-        var serverResponse = <?php print $jsonForcast;?>;
-        var conditionResponse = <?php print $jsonConditions; ?>;
-=======
         var serverResponse = <?php print $jsonForecast;?>;
         var conditionResponse = <?php print $jsonConditions; ?>;
         var currentCondition = "<?php print $conditionsKey; ?>";
         var astronomy = <?php print $jsonAstronomy; ?>;
->>>>>>> 638a249faf91dd8561e307588ebd35680d5b3365
         console.log(serverResponse);
         console.log(conditionResponse);
         console.log(currentCondition);
@@ -400,9 +375,7 @@ foreach($simpleForecasts as $period) {
             </div>
         </div>
         <div class="preview first">
-            <h3><?php print $periodTitles[0]; ?></h3>
-            <?php print $forecastIcons[0]; ?>
-            <?php print applyColor($forecastTemps[0]); ?>
+            <h3><?php print $periodTitles[0]; ?></h3><?php print $forecastIcons[0]; ?><?php print applyColor($forecastTemps[0]); ?>
         </div>
         <div class="preview second">
              <h3><?php print $periodTitles[1];  ?></h3>
@@ -428,6 +401,16 @@ foreach($simpleForecasts as $period) {
              <h3><?php print $periodTitles[5];  ?></h3>
              <?php print $forecastIcons[5]; ?>
              <?php print applyColor($forecastTemps[5]); ?>
+        </div>
+        <div class="preview seventh">
+             <h3><?php print $periodTitles[6];  ?></h3>
+             <?php print $forecastIcons[6]; ?>
+             <?php print applyColor($forecastTemps[6]); ?>
+        </div>
+        <div class="preview eighth">
+             <h3><?php print $periodTitles[7];  ?></h3>
+             <?php print $forecastIcons[7]; ?>
+             <?php print applyColor($forecastTemps[7]); ?>
         </div>
     </body>
     <footer>

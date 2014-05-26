@@ -1,0 +1,42 @@
+.hasCountdown {
+	border: none;
+	background: none;
+}
+* { 
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box; 
+}
+.venice-background {
+	background: url("../images/venice.jpg") no-repeat;
+	background-size: cover;
+	background-position: center;
+	overflow: hidden;
+	height:100%;
+	width: 100%;
+	position: absolute;
+	z-index: -1;
+}
+.countdown-contain {
+	padding-top: 3em;
+}
+footer {
+	position: absolute;
+	bottom: 0;
+	right: 1em;
+}
+
+h1 {
+	text-shadow: 0 0 25px #000000;
+}
+
+@media all and (max-width: 480px) {
+	h1 {
+		font-size: 1.25em;
+		text-shadow: 0 0 8px #000000;
+
+	}
+	footer {
+		font-size: .5em;
+	}
+}

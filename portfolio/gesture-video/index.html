@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="css/normalize.min.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="main-container">
+            <div class="help-overlay">
+                <h2>Welcome to Gesture Video!</h2>
+                <div class="description">
+                    <p>
+                    Gesture video let's you watch a video using the HTML5 video tag and contol it with gestures. For this demo, we've loaded up the trailer for <em>Tron Legacy</em>. The application has 11 gestures that let you control basic aspects of playback: 
+                    </p>
+                    <ul>
+                        <li class="first">
+                            <div class="button">
+                                Play/pause (click)
+                                <img src="img/pointer.svg" type="image/svg+xml" />
+                            </div>
+                        </li>
+
+                        <li class="square">Step forward
+                            <img src="img/images-05.svg" type="image/svg+xml" />
+                        </li>
+                        <li class="square">Step backward
+                            <img src="img/images-08.svg" type="image/svg+xml" />
+                        </li>
+                        <li class="square">Volume up
+                            <img src="img/images-06.svg" type="image/svg+xml" />
+                        </li>
+                        <li class="square">Volume down
+                            <img src="img/images-07.svg" type="image/svg+xml" />
+                        </li>
+                        <li class="square">Increase speed
+                            <img src="img/images-09.svg" type="image/svg+xml" />
+                        </li>
+                        <li class="square">Decrease speed
+                            <img src="img/images-10.svg" type="image/svg+xml" />
+                        </li>
+                        <li class="square">Mute
+                            <img src="img/images-04.svg" type="image/svg+xml" />
+                        </li>
+                        <li class="square">Full volume
+                            <img src="img/images-03.svg" type="image/svg+xml" />
+                        </li>
+                        <li class="double-width">Increase size
+                            <img src="img/images-01.svg" type="image/svg+xml" />
+                        </li>
+                        <li class="double-width">Decrease size
+                            <img src="img/images-02.svg" type="image/svg+xml" />
+                        </li>
+                    </ul>
+                    <p>
+                    The entire window may be used to draw these gestures. It doesn't matter how big the video is zoomed to; the gesture area is always the full window size.
+                    </p>
+                    <div class="get-help exit-help">Use it!</div>
+                </div>
+            </div>
+            <canvas id="myCanvas"></canvas>
+            <div class="status-contain">
+            <h3></h3>
+            <div class="get-help">Need help?</div>
+            </div>
+            <video>
+                <source src="video/apple-html5-demo-tron-us_848x352.m4v" type="video/mp4; codecs=&quot;avc1.42E01E, mp4a.40.2&quot;">
+            </video>   
+
+        </div> <!-- #main-container -->
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.js"><\/script>')</script>
+        <script src="js/vendor/dollar.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>

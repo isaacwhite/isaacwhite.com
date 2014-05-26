@@ -1,0 +1,326 @@
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+* {
+    box-sizing: border-box;
+}
+.header-container {
+    position:fixed;
+    top:0;
+    height: 5rem;
+    background-color: rgb(24, 107, 253);
+    color:white;
+    width: 100%;
+    padding: 1rem 1rem 1rem 2rem;
+}
+
+.header-container h1 {
+    width: 20%;
+    float: left;
+    margin: 0;
+    font-style: italic;
+}
+.header-container nav {
+    float: left;
+    width: 80%;
+}
+
+.current-itin {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 0;
+    text-align: center;
+}
+
+.header-container ul {
+    float:right;
+    margin:0;
+    padding:0;
+}
+.header-container li {
+    display:block;
+    float:left;  
+    border-radius: .25rem;
+    margin: 0 0 0 1rem;
+    background-color: white;
+    position: relative;
+    height: 3rem;
+    width:5rem;
+}
+.header-container li a {
+    text-transform: uppercase;
+    font-size: .875rem;
+    position:absolute;
+    height:100%;
+    width:100%;
+    top:0;
+    bottom:0;
+    padding: .5rem;
+    line-height: 2rem;
+    text-align:center;
+    text-decoration: none;
+    color:black;
+}
+
+.main-container .map-region{
+    position:fixed;
+    top:5rem;
+    bottom:0;
+    left:0;
+    width:70%;
+}
+.main-container article {
+    position:fixed;
+    top: 5rem;
+    bottom: 0;
+    overflow-y: auto;
+    width:30%;
+    right:0;
+    padding:0 1rem;
+    background-color: rgb(236, 224, 202);
+}
+.main-container .start h3,
+.main-container .end h3{
+    text-align:center;
+    display:block;
+}
+
+.endpoint {
+    background-color: black;
+    width:1rem;
+    height:1rem;
+    border-radius: .5rem;
+    display:block;
+    margin:0 auto;
+}
+.connector {
+    width:0;
+    border:1px solid black;
+    height:3rem;
+    display:block;
+    margin: 0 auto;
+}
+
+.venue {
+    background-color: white;
+    text-align:center;
+    padding:.5rem;
+    border-radius:.5rem;
+}
+
+.venue.add-item:hover {
+    cursor: pointer;
+}
+
+
+.general-options {
+    position: relative;
+}
+#search-box {
+    padding: .5rem;
+    height: 2.25rem;
+    width: 95%;
+    border-radius: .5rem;
+    border: 1px solid #d7d7d7;
+    box-sizing: border-box;
+}
+.search-box {
+    width: 100%; padding-right: 2rem;
+}
+#submit-button {
+    text-indent: 9999px;
+    position: absolute;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid #d7d7d7;
+    right: 0;
+    top: 0;
+    background-color: rgb(24, 107, 253);
+    border-radius: .5rem;
+    box-sizing: border-box;
+}
+/*TAKE THIS OUT, JUST FOR DEMO*/
+.map-region:after {
+    content: '[MAP GOES HERE]';
+    font-size: 2rem;
+    text-align:center;
+    margin-top:10rem;
+    position:fixed;
+    top:5rem;
+    bottom:0;
+    width:70%;
+}
+
+ul {
+    margin:0;
+    padding:0;
+}
+
+.transit li input{
+    width: 3rem;
+    height: 3rem;
+    text-indent: 9999px;
+    background-color: #d7d7d7;
+    border: none;
+    border-radius: .5rem;
+    margin: 0 auto;
+    display:block;
+}
+
+.transit li {
+    float: left;
+    display:block;
+    width: 33.33%;
+}
+.transit {
+    padding: .5rem 0;
+    margin: .5rem 0;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.transit:after {
+    visibility: hidden;
+    display: block;
+    content: "";
+    clear: both;
+    height: 0;
+}
+
+.transit,
+.advanced-search {
+    display:none;
+}
+
+.search-form {
+    height: 0%;
+    position: absolute;
+    background-color: rgb(196, 185, 167);
+    width: 100%;
+    top: 0;
+    left: 0;
+    padding: 0 1rem;
+    overflow-y: auto;
+}
+
+.exit {
+    position: absolute;
+    bottom:1rem;
+    left:0;
+    width:100%;
+    background-color:red;
+    text-align:center;
+    opacity:0;
+}
+
+.exit:hover {
+    cursor: pointer;
+}
+
+.reference {
+    position: relative;
+    min-height:100%;
+    padding: 1rem 0 6rem;
+}
+
+.reference .venue {
+    margin-top: .5rem;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    padding-top: 3rem;
+}
+.thumb {
+    height: 10rem;
+    background-repeat: no-repeat;
+    background-size: contain;
+    float: right;
+    width: 50%;
+    background-position: right;
+}
+.reference .venue h3 {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background-color: rgb(100, 100, 100);
+    left: 0;
+    margin: 0;
+    color: white;
+    padding: .5rem;
+}
+blockquote {
+    margin-left: 0;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+.add-venue {
+    overflow: hidden;
+    width: 1.5rem;
+    height: 1.5em;
+    background-color: white;
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    border-radius: .5rem;
+    transition: all .5s;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+
+    /* No support for these yet, use at own risk */
+    -o-user-select: none;
+    user-select: none;  
+}
+.add-venue:hover {
+    cursor: pointer;
+    width:9rem;
+}
+.add-venue span {
+    display:block;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    white-space:nowrap;
+    text-transform:uppercase;
+    color: black;
+    text-decoration: underline;
+    padding: .25rem;
+    padding-left: 2rem;
+    transition: all .5s;
+}
+.add-venue span:hover {
+    opacity: 1;
+}
+
+.add-venue:before {
+    position: absolute;
+    top: 0rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: block;
+    background-color: rgb(174, 180, 250);
+    content: '+';
+    line-height: 1.5rem;
+    text-align: center;
+    font-weight: bold;
+}
+.venue.added:before {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background-color: black;
+    content: 'Added to itinerary';
+    font-size: 2rem;
+    color:white;
+    padding-top:4rem;
+    z-index:2;
+    opacity: .8;
+    text-align: center;
+}

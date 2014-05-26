@@ -25,7 +25,7 @@ $cu-royal: #4a85c8;
 		margin: 0;
 		/*text-shadow: 0 1px 1px #FAE9D5;*/
 		text-align: center;
-		// margin-bottom: .25em;
+		margin-bottom: .25em;
 		/*font-family: 'Junction', sans-serif;*/
 		/*font-family: 'Open Sans', sans-serif;*/
 		font-weight: normal;
@@ -339,8 +339,8 @@ $cu-royal: #4a85c8;
 		h1 {
 			font-size: 2em;
 			text-align: left;
-			// border-bottom: 1px solid white;
-			// margin-bottom:.25em;
+			border-bottom: 1px solid white;
+			margin-bottom:.25em;
 			@media all and (max-width: 30em) {
 				font-size:1.5em;
 			}
@@ -361,6 +361,7 @@ $cu-royal: #4a85c8;
 				@media all and (max-width: 30em) {
 					width:32.4%;
 				}
+				display: none;
 			}
 			&.first>img {
 				display:inherit;
@@ -382,134 +383,4 @@ $cu-royal: #4a85c8;
 		margin-bottom:.25em;
 	}
 
-	//UNDER CONSTRUCTION PORTFOLIO
-
-	#under-construction {
-	    position: absolute;
-	    top: 0;
-	    width: 100%;
-	    left: 0;
-	    height: 100%;
-	    z-index: 2;
-	    text-align: center;
-	    box-sizing: border-box;
-	}
-	#under-construction .background {
-		position: fixed;
-		height: 100%;
-		width: 100%;
-		background-color: black;
-		opacity: .8;
-		left: 0;
-		top: 0;
-		z-index: -1;
-	}
-	#under-construction p {
-	    max-width: 30rem;
-	    display: block;
-	    line-height: 1.6;
-	    margin: 0 auto;
-	    text-align: left;
-	}
-	#under-construction .web-work {
-	    float: left;
-	    padding: 0 1rem 1rem;
-	    background-color: white;
-	    color: black;
-	    margin-bottom: 1rem;
-	    box-sizing: border-box;
-	    opacity: 1;
-	    min-height: 12rem;
-	    border-radius: 0.125rem
-	}
-	#under-construction .web-work p {
-	    max-width: 90%;
-	}
-	#under-construction .content-contain > p {
-	    margin-bottom: 4rem;
-	}
-	#portfolio {
-	    overflow: hidden;
-	}
-	#under-construction h4{
-		font-size: 1.125rem;
-	}
-	#under-construction h2 {
-		font-size: 2.5rem;
-	}
-	#under-construction .view-page {
-	    display: block;
-	    clear: both;
-	    padding-top: 1rem;
-	    margin-bottom: 2rem;
-	}
-	#under-construction .view-page h3 {
-	    font-style: normal;
-	    background-color: black;
-	    width: 60%;
-	    padding: 1rem;
-	    border-radius: 0.125rem;
-	    border: 1px solid #d7d7d7;
-	    transition: all .25s;
-	}
-	#under-construction .view-page h3:hover {
-	    cursor: pointer;
-	    background-color: white;
-	    color: black;
-	}
-	#under-construction .web-work a {
-		border-bottom: 1px dotted black;
-		padding: 0.125rem;
-		color: black;
-		line-height:1.5;
-	}
-	#under-construction .web-work a:hover {
-		padding: 0.125rem 1rem;
-		border-radius: 0.125rem;
-		color: white;
-		background-color: black;
-		transition: all .25s;
-	}
-	#under-construction .content-contain {
-		max-width: 60rem;
-		margin: 0 auto;
-		padding: 0 1rem;
-	}
-
-	#portfolio .view-page {
-	    margin-bottom: .5rem;
-	    border-bottom: 1px solid white;
-	    padding-bottom: .5rem;
-	    padding-top: .5rem;
-	    border-top: 1px solid white;
-	    transition: all .5s;
-	}
-	#portfolio .view-page h3 {
-	    width: 100%;
-	}
-
-	#portfolio .view-page:hover {
-		background-color: white;
-		cursor: pointer;
-	}
-
-	#portfolio .view-page:hover h3{
-		color: black;
-	}
-
-	.view-page a {
-		display: block;
-	}
-
-@media all and (min-width: 45em) {
-	#under-construction .web-work {
-	    width: 49%;
-	}
-	#under-construction .web-work:nth-child(odd) {
-	    clear:both;
-	}
-	#under-construction .web-work:nth-child(even) {
-	    margin-left: 2%;
-	}
-}
-		
+	
